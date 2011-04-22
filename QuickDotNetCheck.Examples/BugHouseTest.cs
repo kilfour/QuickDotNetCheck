@@ -62,18 +62,24 @@ namespace QuickDotNetCheck.Examples
             output = suite.Get<BugHouseFixtureState>().BugHouse.Run(input);
         }
 
+        private SimpleValuesShrinkingStrategy<BugHouseFixture, int> shrunk;
+
         public override void Shrink(Func<bool> runFunc)
         {
-            new SimpleValuesShrinkingStrategy<BugHouseFixture,int>(
-                this, e => e.input, new[] { -1, 0, 1 })
-                .Shrink(runFunc);
+            shrunk =
+                new SimpleValuesShrinkingStrategy<BugHouseFixture, int>(
+                    this,
+                    e => e.input, new[] {-1, 0, 1});
+
+            shrunk.Shrink(runFunc);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.AppendLine(GetType().Name);
-            sb.AppendFormat("input : {0}.", input);
+            if(!shrunk.Shrunk())
+                sb.AppendFormat("input : {0}.", input);
             return sb.ToString();
         }
 
