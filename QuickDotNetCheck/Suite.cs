@@ -125,14 +125,14 @@ namespace QuickDotNetCheck
                         var fixture = fixtureFuncs.Select(f => f()).Where(f => f.CanAct()).PickOne();
                         executedFixtures.Add(fixture);
                         fixture.Arrange();
-                        //try
-                        //{
-                        fixture.Execute();
-                        //}
-                        //catch (Exception e)
-                        //{
-                        //    LastException = e;
-                        //}
+                        try
+                        {
+                            fixture.Execute();
+                        }
+                        catch (Exception e)
+                        {
+                            LastException = e;
+                        }
                         var testedSpecs = fixture.Assert();
                         testedSpecs.ForEach(s => knownspecs[s]++);
                         if (LastException != null)
@@ -143,11 +143,10 @@ namespace QuickDotNetCheck
             }
             catch (FalsifiableException failure)
             {
-                ReportFailure(-1/* FIXME */, -1/* FIXME */, failure);
                 disposables.ForEach(d => d.Dispose());
                 if (shrink)
-                    return new RunReport(false, Shrink(executedFixtures, failure));
-                return new RunReport(false, null);
+                    return new RunReport(false, failure, Shrink(executedFixtures, failure));
+                return new RunReport(false, failure, null);
             }
             var untested = knownspecs.Where(s => s.Value == 0).ToList();
             if (untested.Count() > 0)
@@ -157,7 +156,7 @@ namespace QuickDotNetCheck
                 untested.ForEach(s => sb.AppendLine(s.Key));
                 throw new ApplicationException(sb.ToString());
             }
-            return new RunReport(true, null);
+            return new RunReport(true, null, null);
         }
 
         private bool Fails(IEnumerable<IFixture> actions, FalsifiableException previousFailure)
@@ -185,10 +184,14 @@ namespace QuickDotNetCheck
                     }
                     break;
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
-                    //FIXME
-                    //Console.WriteLine(e);
+                    if (ex.Message == LastException.Message)
+                    {
+                        disposables.ForEach(d => d.Dispose());
+                        Reporter = oldReporter;
+                        return true;
+                    }
                     break;
                 }
             }
@@ -246,17 +249,7 @@ namespace QuickDotNetCheck
 
         private void WriteSimplestFailCaseToReporter(SimplestFailCase simplestFailcase)
         {
-            Reporter.WriteLine("--------------------Simplest Fail Case--------------------");
-            int ix = 1;
-            foreach (var transition in simplestFailcase.Fixtures)
-            {
-                Reporter.Write(ix.ToString());
-                Reporter.Write(" : ");
-                Reporter.Write(transition.ToString());
-                Reporter.WriteLine("");
-                ix++;
-            }
-            Reporter.WriteLine("----------------------------------------------------------");
+            Reporter.WriteLine(simplestFailcase.Report());
         }
 
         private void ReportFailure(int testNumber, int transitionNumber, FalsifiableException failure)
@@ -271,44 +264,6 @@ namespace QuickDotNetCheck
                 testNumber,
                 transitionNumber);
             Reporter.WriteLine(sbReport.ToString());
-        }
-    }
-
-    public class RunReport
-    {
-        private static readonly RunReport success = new RunReport(true, null);
-        public static RunReport Success
-        {
-            get { return success; }
-        }
-
-        private readonly bool succeeded;
-        private readonly SimplestFailCase simplestFailCase;
-        public SimplestFailCase SimplestFailCase{get { return simplestFailCase; }}
-        
-        public RunReport(bool succeeded, SimplestFailCase simplestFailCase)
-        {
-            this.succeeded = succeeded;
-            this.simplestFailCase = simplestFailCase;
-        }
-
-        public bool Failed()
-        {
-            return !succeeded;
-        }
-
-        public bool Succeeded()
-        {
-            return succeeded;
-        }
-    }
-
-    public class SimplestFailCase
-    {
-        public List<IFixture> Fixtures;
-        public SimplestFailCase(List<IFixture> fixtures)
-        {
-            Fixtures = fixtures;
         }
     }
 }

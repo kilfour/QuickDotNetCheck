@@ -39,6 +39,8 @@
   <ItemGroup>
     <Compile Include="IfAfterAttribute.cs" />
     <Compile Include="Reporting\NullReporter.cs" />
+    <Compile Include="RunReport.cs" />
+    <Compile Include="SimplestFailCase.cs" />
     <Compile Include="SimpleValuesShrinkingStrategy.cs" />
     <Compile Include="NotInTheRoot\FactInfo.cs" />
     <Compile Include="IfAttribute.cs" />
