@@ -23,7 +23,7 @@ namespace QuickDotNetCheck.Examples
         {
             var suite = new Suite(50, 20);
             var report =
-                    suite
+                suite
                     .Using(() => new BugHouseFixtureState())
                     .Register(() => new BugHouseFixture(suite))
                     .Run();
