@@ -14,4 +14,7 @@
     	OutputFile="QuickDoc.html"
     	HtmlOutput="true"/>
   </Target>
+  <Target Name="Release">
+    <MSBuild Projects="QuickDotNetCheck.sln" Properties="Configuration=Release"/>
+  </Target>
 </Project>
