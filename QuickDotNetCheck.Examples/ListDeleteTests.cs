@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuickDotNetCheck.Implementation;
+using QuickGenerate;
 using QuickGenerate.Primitives;
-using QuickGenerate.Uber;
 using Xunit;
 
 namespace QuickDotNetCheck.Examples
@@ -42,12 +42,7 @@ namespace QuickDotNetCheck.Examples
         public override void Arrange()
         {
             toRemove = intGen.GetRandomValue();
-
-            inputList =
-                new GeneratorRepository()
-                    .With<int>(intGen)
-                    .Randoms<int>(1, 10)
-                    .ToList();
+            inputList = new DomainGenerator().With(() => intGen).Many<int>(1, 10).ToList();
         }
 
         protected override void Act()
