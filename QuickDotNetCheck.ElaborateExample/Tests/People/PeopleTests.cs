@@ -14,6 +14,7 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People
                 .Using(() => new DatabaseTest())
                 .Register(() => new CreateValidPersonFixture())
                 .Register(() => new UpdateValidPersonFixture())
+                .Register(() => new UpdatePersonInvalidIdFixture())
                 .Run();
         }
     }

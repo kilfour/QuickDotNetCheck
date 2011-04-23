@@ -129,15 +129,17 @@ namespace QuickDotNetCheck
                         try
                         {
                             fixture.Execute();
+                            var testedSpecs = fixture.Assert();
+                            testedSpecs.ForEach(s => knownspecs[s]++);
                         }
                         catch (Exception e)
                         {
                             LastException = e;
+                            var testedSpecs = fixture.Assert();
+                            testedSpecs.ForEach(s => knownspecs[s]++);
+                            if (LastException != null)
+                                throw;
                         }
-                        var testedSpecs = fixture.Assert();
-                        testedSpecs.ForEach(s => knownspecs[s]++);
-                        if (LastException != null)
-                            throw LastException;
                     }
                     disposables.ForEach(d => d.Dispose());
                 }

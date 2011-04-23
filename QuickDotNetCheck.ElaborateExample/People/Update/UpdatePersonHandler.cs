@@ -15,6 +15,8 @@ namespace QuickDotNetCheck.ElaborateExample.People.Update
         public void Handle(UpdatePersonRequest request)
         {
             var person = session.Get<Person>(request.Id);
+            if(person == null)
+                return;
             person.Address =
                 new Address(
                     request.AddressStreet,
