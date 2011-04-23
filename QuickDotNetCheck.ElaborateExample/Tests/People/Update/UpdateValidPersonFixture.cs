@@ -98,7 +98,6 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
 
         public override void Shrink(Func<bool> runFunc)
         {
-            originalPerson.Recall(e => e.FirstName);
             shrinkingStrategy =
                 ShrinkingStrategy.For(request)
                     .Add(Simple.Values<int>())

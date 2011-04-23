@@ -1,10 +1,12 @@
-﻿using NHibernate;
+﻿using System;
 using NHibernate.Criterion;
 using QuickDotNetCheck.ElaborateExample.Domain;
 using QuickDotNetCheck.ElaborateExample.People.Create;
 using QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers;
 using QuickDotNetCheck.ElaborateExample.Tests.People.Helpers;
+using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
+using QuickGenerate.Writing;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
 {
@@ -54,6 +56,41 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
                     .List<Person>();
 
             Ensure.GreaterThan(0, people.Count);
+        }
+
+        private CompositeShrinkingStrategy<CreatePersonRequest> shrinkingStrategy;
+
+        public override void Shrink(Func<bool> runFunc)
+        {
+            shrinkingStrategy =
+                ShrinkingStrategy.For(request)
+                    .Add(Simple.Values<int>())
+                    .Add(Simple.Values<String>())
+                    .Add(Simple.Values<DateTime>())
+                    .Add(Get.From(request).All<string>())
+                    .Add(Get.From(request).All<int>())
+                    .Add(Get.From(request).All<DateTime>())
+                    .Register(e => e.FirstName)
+                    .Register(e => e.LastName)
+                    .Register(e => e.Title)
+                    .Register(e => e.BirthDate)
+                    .Register(e => e.AddressStreet)
+                    .Register(e => e.AddressCity)
+                    .Register(e => e.AddressPostalCode)
+                    .Register(e => e.AddressCountry)
+                    .Register(e => e.LastName)
+                    .Register(e => e.Phone);
+
+            shrinkingStrategy.Shrink(runFunc);
+        }
+
+        public override string ToString()
+        {
+            var stream = new StringStream();
+            stream.Write(GetType().Name);
+            stream.WriteLine();
+            stream.Write(shrinkingStrategy.Report());
+            return stream.ToReader().ReadToEnd();
         }
     }
 

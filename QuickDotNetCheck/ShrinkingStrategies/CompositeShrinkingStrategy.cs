@@ -69,7 +69,7 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         private readonly Dictionary<Type, List<object>> simpleValues =
             new Dictionary<Type, List<object>>();
 
-        public CompositeShrinkingStrategy<TEntity> Add<TProperty>(TProperty[] values)
+        public CompositeShrinkingStrategy<TEntity> Add<TProperty>(params TProperty[] values)
         {
             if(!simpleValues.ContainsKey(typeof(TProperty)))
                 simpleValues[typeof(TProperty)] = new List<object>();
