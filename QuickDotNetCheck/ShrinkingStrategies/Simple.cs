@@ -10,7 +10,7 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         private static readonly Dictionary<Type, object[]> simpleValues =
             new Dictionary<Type, object[]>
                 {
-                    {typeof(string), new object[]{"", null}},
+                    {typeof(string), new object[]{""}},
                     {typeof(int), new object[]{-1, 0 ,1}},
                     {typeof(DateTime), new object[]{1.January(2010), 31.December(1970)}},
                 };
@@ -19,6 +19,11 @@ namespace QuickDotNetCheck.ShrinkingStrategies
             if (!simpleValues.ContainsKey(typeof(T)))
                 throw new InvalidOperationException(string.Format("No simple values for Type : '{0}'.", typeof(T).Name));
             return simpleValues[typeof(T)].Cast<T>().ToArray();
+        }
+
+        public static object[] AllValues()
+        {
+            return simpleValues.SelectMany(values => values.Value).ToArray();
         }
     }
 }

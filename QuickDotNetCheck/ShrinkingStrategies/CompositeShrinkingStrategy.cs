@@ -38,10 +38,10 @@ namespace QuickDotNetCheck.ShrinkingStrategies
             var propertyInfo = propertyExpression.AsPropertyInfo();
             if (!shrinkingStrategies.ContainsKey(propertyInfo))
                 shrinkingStrategies.Add(propertyInfo, new SimpleValuesShrinkingStrategy<TEntity, TProperty>(entity, propertyExpression));
-            if(simpleValues.ContainsKey(typeof(TProperty)))
+            if (simpleValues.Keys.Any(key => typeof(TProperty).IsAssignableFrom(key)))
             {
                 var shrinkingStrategy = shrinkingStrategies[propertyInfo];
-                shrinkingStrategy.AddValues(simpleValues[typeof(TProperty)].ToArray());
+                shrinkingStrategy.AddValues(simpleValues.First(pair => typeof(TProperty).IsAssignableFrom(pair.Key)).Value.ToArray());
             }
             return this;
         }
@@ -69,11 +69,14 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         private readonly Dictionary<Type, List<object>> simpleValues =
             new Dictionary<Type, List<object>>();
 
-        public CompositeShrinkingStrategy<TEntity> Add<TProperty>(params TProperty[] values)
+        public CompositeShrinkingStrategy<TEntity> Add(params object[] values)
         {
-            if(!simpleValues.ContainsKey(typeof(TProperty)))
-                simpleValues[typeof(TProperty)] = new List<object>();
-            simpleValues[typeof(TProperty)].AddRange(values.Cast<object>());
+            foreach (var value in values)
+            {
+                if (!simpleValues.ContainsKey(value.GetType()))
+                    simpleValues[value.GetType()] = new List<object>();
+                simpleValues[value.GetType()].Add(value);
+            }
             return this;
         }
 

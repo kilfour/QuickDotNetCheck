@@ -57,6 +57,7 @@
     <Compile Include="ShrinkingTests\ShrinkingAListTests.cs" />
     <Compile Include="ShrinkingTests\ShrinkingAnIntTests.cs" />
     <Compile Include="ShrinkingTests\ShrinkingAnObjectTests.cs" />
+    <Compile Include="ShrinkingTests\ShrinkingAnObjectTestsRemovingBookkeepingAllValuesTests.cs" />
     <Compile Include="ShrinkingTests\ShrinkingAnObjectTestsRemovingBookkeepingRegisterAllTests.cs" />
     <Compile Include="ShrinkingTests\ShrinkingAnObjectTestsRemovingDuplicateBookkeepingTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesTests.cs" />
