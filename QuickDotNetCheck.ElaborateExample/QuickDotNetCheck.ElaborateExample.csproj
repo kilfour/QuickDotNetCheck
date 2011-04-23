@@ -83,6 +83,7 @@
     <Compile Include="Tests\DataAccess\PersonCrudTest.cs" />
     <Compile Include="Tests\People\Create\CreateValidPersonFixture.cs" />
     <Compile Include="Tests\People\Helpers\NumberOfPeopleInDb.cs" />
+    <Compile Include="Tests\People\Helpers\NumberOfPeopleInDbWhere.cs" />
     <Compile Include="Tests\People\PeopleTests.cs" />
     <Compile Include="Tests\People\Update\UpdateValidPersonFixture.cs" />
   </ItemGroup>

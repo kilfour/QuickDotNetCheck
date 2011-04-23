@@ -39,6 +39,60 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
         }
 
         [Spec]
+        public void DbContainsPersonWithFirstName()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("FirstName", request.FirstName)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithLastName()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("LastName", request.LastName)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithTitle()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Title", request.Title)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithBirthDate()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("BirthDate", request.BirthDate)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressStreet()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.Street", request.AddressStreet)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressCity()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.City", request.AddressCity)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressPostalCode()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.PostalCode", request.AddressPostalCode)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressCountry()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.Country", request.AddressCountry)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithPhone()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Phone", request.Phone)));
+        }
+
+        [Spec]
         public void DbContainsThisPerson()
         {
             var people =
@@ -64,22 +118,9 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
         {
             shrinkingStrategy =
                 ShrinkingStrategy.For(request)
-                    .Add(Simple.Values<int>())
-                    .Add(Simple.Values<String>())
-                    .Add(Simple.Values<DateTime>())
-                    .Add(Get.From(request).All<string>())
-                    .Add(Get.From(request).All<int>())
-                    .Add(Get.From(request).All<DateTime>())
-                    .Register(e => e.FirstName)
-                    .Register(e => e.LastName)
-                    .Register(e => e.Title)
-                    .Register(e => e.BirthDate)
-                    .Register(e => e.AddressStreet)
-                    .Register(e => e.AddressCity)
-                    .Register(e => e.AddressPostalCode)
-                    .Register(e => e.AddressCountry)
-                    .Register(e => e.LastName)
-                    .Register(e => e.Phone);
+                    .Add(Simple.AllValues())
+                    .Add(Get.From(request).AllValues())
+                    .RegisterAll();
 
             shrinkingStrategy.Shrink(runFunc);
         }

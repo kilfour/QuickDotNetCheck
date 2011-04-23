@@ -7,7 +7,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
 {
     public class ShrinkingAnObjectTestsRemovingBookkeepingRegisterAllTests
     {
-        [Fact(Skip="TODO")]
+        [Fact]
         public void Shrunk()
         {
             var something = Generate.One<SomethingToShrink>();

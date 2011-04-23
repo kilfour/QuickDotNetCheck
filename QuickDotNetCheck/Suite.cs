@@ -89,7 +89,7 @@ namespace QuickDotNetCheck
         }
 
 
-        public RunReport Run()
+        public void Run()
         {
             objects = objectFuncs.Select(f => f()).ToList();
             disposables = disposableFuncs.Select(f => f()).ToList();
@@ -139,15 +139,15 @@ namespace QuickDotNetCheck
                         if (LastException != null)
                             throw LastException;
                     }
+                    disposables.ForEach(d => d.Dispose());
                 }
-                disposables.ForEach(d => d.Dispose());
             }
             catch (FalsifiableException failure)
             {
                 disposables.ForEach(d => d.Dispose());
                 if (shrink)
-                    return new RunReport(false, failure, Shrink(executedFixtures, failure));
-                return new RunReport(false, failure, null);
+                    throw new RunReport(failure, Shrink(executedFixtures, failure));
+                throw new RunReport(failure);
             }
             var untested = knownspecs.Where(s => s.Value == 0).ToList();
             if (untested.Count() > 0)
@@ -157,7 +157,6 @@ namespace QuickDotNetCheck
                 untested.ForEach(s => sb.AppendLine(s.Key));
                 throw new ApplicationException(sb.ToString());
             }
-            return new RunReport(true, null, null);
         }
 
         private bool Fails(IEnumerable<IFixture> actions, FalsifiableException previousFailure)

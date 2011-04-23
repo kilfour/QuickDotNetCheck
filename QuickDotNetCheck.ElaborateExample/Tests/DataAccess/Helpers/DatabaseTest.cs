@@ -31,7 +31,7 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
                 var definition = new DomainDefinition();
                 configuration.AddDeserializedMapping(definition.Mapping(), definition.GetType().Name);
                 var schemaExport = new SchemaExport(configuration);
-                schemaExport.Create(true, true);
+                schemaExport.Create(false, true);
                 sessionFactory = configuration.BuildSessionFactory();
             }
             var session = sessionFactory.OpenSession();

@@ -13,21 +13,21 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         object OriginalValue();
     }
 
-    public class SimpleValuesShrinkingStrategy<TEntity, TProperty> : ISimpleValuesShrinkingStrategy
+    public class SimpleValuesShrinkingStrategy<TEntity> : ISimpleValuesShrinkingStrategy
     {
         private readonly TEntity target;
 
-        private readonly Func<TEntity, TProperty> getter;
-        private readonly Action<TEntity, TProperty> setter;
+        private readonly Func<TEntity, object> getter;
+        private readonly Action<TEntity, object> setter;
 
-        private readonly List<TProperty> simpleValues = new List<TProperty>();
+        private readonly List<object> simpleValues = new List<object>();
 
         private readonly object originalValue;
 
         public SimpleValuesShrinkingStrategy(
             TEntity target,
-            Func<TEntity, TProperty> getter,
-            Action<TEntity, TProperty> setter)
+            Func<TEntity, object> getter,
+            Action<TEntity, object> setter)
         {
             this.target = target;
             this.getter = getter;
@@ -36,13 +36,13 @@ namespace QuickDotNetCheck.ShrinkingStrategies
 
         public SimpleValuesShrinkingStrategy(
             TEntity target,
-            Expression<Func<TEntity, TProperty>> expression)
+            Expression<Func<TEntity, object>> expression)
         {
             this.target = target;
 
             var property = expression.AsPropertyInfo();
-            
-            getter = t => (TProperty)property.GetValue(t, null);
+
+            getter = t => (object)property.GetValue(t, null);
             setter = (t, value) => property.SetValue(t, value, null);
 
             originalValue = getter(target);
@@ -54,7 +54,7 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         {
             this.target = target;
 
-            getter = t => (TProperty)propertyInfo.GetValue(t, null);
+            getter = t => (object)propertyInfo.GetValue(t, null);
             setter = (t, value) => propertyInfo.SetValue(t, value, null);
 
             originalValue = getter(target);
@@ -80,7 +80,7 @@ namespace QuickDotNetCheck.ShrinkingStrategies
 
         public void AddValues(object[] values)
         {
-            simpleValues.AddRange(values.Cast<TProperty>());
+            simpleValues.AddRange(values.Cast<object>());
         }
 
         public object OriginalValue()

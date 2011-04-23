@@ -13,9 +13,7 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
                     .Do<SomeFixtureToRun>()
                     .Do<SomeFixtureThatFails>();
 
-            var report = suite.Run();
-            Assert.True(report.Failed());
-            Assert.False(report.Succeeded());
+            var report = Assert.Throws<RunReport>(() => suite.Run());
             Assert.Equal(1, report.SimplestFailCase.Fixtures.Count);
             Assert.Equal(typeof(SomeFixtureThatFails), report.SimplestFailCase.Fixtures[0].GetType());
         }

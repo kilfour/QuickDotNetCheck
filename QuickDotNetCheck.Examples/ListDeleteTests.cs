@@ -60,12 +60,9 @@ namespace QuickDotNetCheck.Examples
         [Fact]
         public void VerifyAll()
         {
-            var report =
-                new Suite(50, 20)
-                    .Register(() => new PropertyBasedTesting())
-                    .Run();
-
-            Xunit.Assert.True(report.Succeeded(), report.Report());
+            new Suite(50, 20)
+                .Register(() => new PropertyBasedTesting())
+                .Run();
         }
 
         public override void Shrink(Func<bool> runFunc)

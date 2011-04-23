@@ -39,10 +39,10 @@ namespace QuickDotNetCheck.ShrinkingStrategies
                 int ix = index;
 
                 var strategy =
-                    new SimpleValuesShrinkingStrategy<IList<TProperty>, TProperty>(
+                    new SimpleValuesShrinkingStrategy<IList<TProperty>>(
                         theList,
                         t => t[ix],
-                        (t,i) => t[ix] = i);
+                        (t,i) => t[ix] = (TProperty)i);
                 strategy.AddValues(simpleValues.Cast<object>().ToArray());
                 strategy.Shrink(runFunc);
 

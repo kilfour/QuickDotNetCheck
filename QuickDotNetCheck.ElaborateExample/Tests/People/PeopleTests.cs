@@ -10,14 +10,11 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People
         [Fact]
         public void All()
         {
-            var report =
-                new Suite(1, 10)
-                    .Using(() => new DatabaseTest())
-                    .Register(() => new CreateValidPersonFixture())
-                    .Register(() => new UpdateValidPersonFixture())
-                    .Run();
-
-            Assert.True(report.Succeeded(), report.Report());
+            new Suite(10, 5)
+                .Using(() => new DatabaseTest())
+                .Register(() => new CreateValidPersonFixture())
+                .Register(() => new UpdateValidPersonFixture())
+                .Run();
         }
     }
 }

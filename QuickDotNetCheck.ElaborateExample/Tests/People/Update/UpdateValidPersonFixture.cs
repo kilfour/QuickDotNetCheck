@@ -51,8 +51,6 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
                     .One<UpdatePersonRequest>();
         }
 
-        
-
         public override bool CanAct()
         {
             return new NumberOfPeopleInDb().Get() > 0;
@@ -72,6 +70,60 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
         public void DbContainsTheSameAmountOfPeople()
         {
             Ensure.Equal(numberOfPeopleInDbBeforeAct, new NumberOfPeopleInDb().Get());
+        }
+
+        [Spec]
+        public void DbContainsPersonWithFirstName()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("FirstName", request.FirstName)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithLastName()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("LastName", request.LastName)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithTitle()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Title", request.Title)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithBirthDate()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("BirthDate", request.BirthDate)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressStreet()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.Street", request.AddressStreet)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressCity()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.City", request.AddressCity)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressPostalCode()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.PostalCode", request.AddressPostalCode)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithAddressCountry()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.Country", request.AddressCountry)));
+        }
+
+        [Spec]
+        public void DbContainsPersonWithPhone()
+        {
+            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Phone", request.Phone)));
         }
 
         [Spec]
@@ -100,25 +152,12 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
         {
             shrinkingStrategy =
                 ShrinkingStrategy.For(request)
-                    .Add(Simple.Values<int>())
-                    .Add(Simple.Values<String>())
-                    .Add(Simple.Values<DateTime>())
-                    .Add(Get.From(request).All<string>())
-                    .Add(Get.From(request).All<int>())
-                    .Add(Get.From(request).All<DateTime>())
-                    .Add(originalPerson.Collected<int>())
-                    .Add(originalPerson.Collected<string>())
-                    .Add(originalPerson.Collected<DateTime>())
-                    .Register(e => e.FirstName)
-                    .Register(e => e.LastName)
-                    .Register(e => e.Title)
-                    .Register(e => e.BirthDate)
-                    .Register(e => e.AddressStreet)
-                    .Register(e => e.AddressCity)
-                    .Register(e => e.AddressPostalCode)
-                    .Register(e => e.AddressCountry)
-                    .Register(e => e.LastName)
-                    .Register(e => e.Phone);
+                    .Add(Simple.AllValues())
+                    .Add(Get.From(request).AllValues())
+                    .Add(originalPerson.AllCollected())
+                    .Add(originalPerson.RecallFrom(p => p.Address).AllCollected())
+                    .Ignore(e => e.Id)
+                    .RegisterAll();
 
             shrinkingStrategy.Shrink(runFunc);
         }
@@ -128,11 +167,9 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
             var stream = new StringStream();
             stream.Write(GetType().Name);
             stream.WriteLine();
-            stream.Write("Id : ");
-            stream.Write(request.Id.ToString());
-            stream.Write(" .");
-            stream.WriteLine();
             stream.Write(shrinkingStrategy.Report());
+            stream.Write("Where Id == ");
+            stream.Write(request.Id.ToString());
             return stream.ToReader().ReadToEnd();
         }
     }

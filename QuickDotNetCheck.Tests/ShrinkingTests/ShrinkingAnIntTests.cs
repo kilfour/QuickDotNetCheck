@@ -16,7 +16,7 @@ namespace QuickDotNetCheckTests
 
             theInt = 42;
 
-            var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
+            var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
                 this,
                 e => e.theInt);
             shrinkStrat.AddValues(new object[] { -1, 0, 1 });
@@ -39,7 +39,7 @@ namespace QuickDotNetCheckTests
             theInt = 42;
 
             var shrinkStrat = 
-                new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
+                new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
                     this,
                     e => e.theInt);
             shrinkStrat.AddValues(new object[] { -1, 0, 1 });
@@ -55,10 +55,10 @@ namespace QuickDotNetCheckTests
 
             theInt = 42;
 
-            var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
+            var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
                 this,
                 e => e.theInt,
-                (e, i) => e.theInt = i);
+                (e, i) => e.theInt = (int)i);
             shrinkStrat.AddValues(new object[] { -1, 0, 1 });
             shrinkStrat.Shrink(runFunc);
 
@@ -78,10 +78,10 @@ namespace QuickDotNetCheckTests
             theInt = 42;
 
             var shrinkStrat =
-                new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
+                new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
                     this,
                     e => e.theInt,
-                    (e, i) => e.theInt = i);
+                    (e, i) => e.theInt = (int)i);
             shrinkStrat.AddValues(new object[] { -1, 0, 1 });
             shrinkStrat.Shrink(runFunc);
 

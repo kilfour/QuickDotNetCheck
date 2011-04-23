@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace QuickDotNetCheck.ShrinkingStrategies
@@ -27,6 +28,17 @@ namespace QuickDotNetCheck.ShrinkingStrategies
             return
                 properties
                     .Select(propertyInfo => (TProperty)propertyInfo.GetValue(target, null))
+                    .ToArray();
+        }
+
+        public object[] AllValues()
+        {
+            var properties =
+                typeof(T).GetProperties();
+
+            return
+                properties
+                    .Select(propertyInfo => propertyInfo.GetValue(target, null))
                     .ToArray();
         }
     }

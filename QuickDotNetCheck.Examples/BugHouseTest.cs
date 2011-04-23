@@ -23,13 +23,10 @@ namespace QuickDotNetCheck.Examples
         public void VerifyAll()
         {
             var suite = new Suite(50, 20);
-            var report =
-                suite
-                    .Using(() => new BugHouseFixtureState())
-                    .Register(() => new BugHouseFixture(suite))
-                    .Run();
-
-            Assert.True(report.Succeeded(), report.Report());
+            suite
+                .Using(() => new BugHouseFixtureState())
+                .Register(() => new BugHouseFixture(suite))
+                .Run();
         }
     }
 
@@ -63,14 +60,12 @@ namespace QuickDotNetCheck.Examples
             output = suite.Get<BugHouseFixtureState>().BugHouse.Run(input);
         }
 
-        private SimpleValuesShrinkingStrategy<BugHouseFixture, int> shrunk;
+        private SimpleValuesShrinkingStrategy<BugHouseFixture> shrunk;
 
         public override void Shrink(Func<bool> runFunc)
         {
             shrunk =
-                new SimpleValuesShrinkingStrategy<BugHouseFixture, int>(
-                    this,
-                    e => e.input);
+                new SimpleValuesShrinkingStrategy<BugHouseFixture>(this, e => e.input);
             shrunk.AddValues(new object[] { -1, 0, 1 });
             shrunk.Shrink(runFunc);
         }

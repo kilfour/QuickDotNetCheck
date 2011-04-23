@@ -14,6 +14,8 @@ namespace QuickDotNetCheck.ShrinkingStrategies
 
         private readonly Dictionary<PropertyInfo, ISimpleValuesShrinkingStrategy> shrinkingStrategies =
             new Dictionary<PropertyInfo, ISimpleValuesShrinkingStrategy>();
+        
+        private readonly List<PropertyInfo> propertiesToIgnore = new List<PropertyInfo>();
 
         public CompositeShrinkingStrategy(TEntity entity)
         {
@@ -36,18 +38,34 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         public CompositeShrinkingStrategy<TEntity> Register<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression)
         {
             var propertyInfo = propertyExpression.AsPropertyInfo();
+            return Register(propertyInfo);
+        }
+
+        private CompositeShrinkingStrategy<TEntity> Register(PropertyInfo propertyInfo)
+        {
             if (!shrinkingStrategies.ContainsKey(propertyInfo))
-                shrinkingStrategies.Add(propertyInfo, new SimpleValuesShrinkingStrategy<TEntity, TProperty>(entity, propertyExpression));
-            if (simpleValues.Keys.Any(key => typeof(TProperty).IsAssignableFrom(key)))
+                shrinkingStrategies.Add(propertyInfo, new SimpleValuesShrinkingStrategy<TEntity>(entity, propertyInfo));
+            if (simpleValues.Keys.Any(key => propertyInfo.PropertyType.IsAssignableFrom(key)))
             {
                 var shrinkingStrategy = shrinkingStrategies[propertyInfo];
-                shrinkingStrategy.AddValues(simpleValues.First(pair => typeof(TProperty).IsAssignableFrom(pair.Key)).Value.ToArray());
+                shrinkingStrategy.AddValues(simpleValues.First(pair => propertyInfo.PropertyType.IsAssignableFrom(pair.Key)).Value.ToArray());
             }
+            return this;
+        }
+        public CompositeShrinkingStrategy<TEntity> Ignore<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression)
+        {
+            propertiesToIgnore.Add(propertyExpression.AsPropertyInfo());
             return this;
         }
 
         public CompositeShrinkingStrategy<TEntity> RegisterAll()
         {
+            var properties = typeof(TEntity).GetProperties();
+            foreach (var propertyInfo in properties)
+            {
+                if(!propertiesToIgnore.Contains(propertyInfo))
+                    Register(propertyInfo);
+            }
             return this;
         }
 
@@ -83,17 +101,29 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         public string Report()
         {
             var stream = new StringStream();
-            foreach (var shrinkingStrategy in shrinkingStrategies)
+            if(Shrunk())
             {
-                stream.Write(shrinkingStrategy.Key.Name);
-                stream.Write(" : ");
-                if (shrinkingStrategy.Value.Shrunk())
-                    stream.Write("-");
-                else
-                    stream.Write(shrinkingStrategy.Value.OriginalValue().ToString());
-                stream.Write(" .");
-                stream.WriteLine();
+                stream.Write("Any ");
+                stream.Write(typeof(TEntity).Name);
+                stream.Write(".");
             }
+            else
+            {
+                stream.Write("A(n) ");
+                stream.Write(typeof(TEntity).Name);
+                stream.Write(" where :");
+                stream.WriteLine();
+                foreach (var shrinkingStrategy in shrinkingStrategies)
+                {
+                    if (shrinkingStrategy.Value.Shrunk())
+                        continue;
+                    stream.Write(shrinkingStrategy.Key.Name);
+                    stream.Write(" == ");
+                    stream.Write(shrinkingStrategy.Value.OriginalValue().ToString());
+                    stream.WriteLine();
+                }   
+            }
+            
             return stream.ToReader().ReadToEnd();
         }
     }

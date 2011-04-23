@@ -15,6 +15,7 @@ namespace QuickDotNetCheck
         public string Report()
         {
             var sb = new StringBuilder();
+            sb.AppendLine();
             sb.AppendLine("--------------------Simplest Fail Case--------------------");
             int ix = 1;
             foreach (var transition in Fixtures)
