@@ -5,7 +5,7 @@ using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using QuickDotNetCheck.ElaborateExample.Domain;
 
-namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess
+namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
 {
     public abstract class DatabaseTest : IDisposable
     {

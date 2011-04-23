@@ -8,7 +8,7 @@ using QuickGenerate;
 using QuickGenerate.Reflect;
 using Xunit;
 
-namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess
+namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
 {
     public abstract class CrudTest<TEntity, TId> : DatabaseTest
         where TEntity : IHaveAnId<TId>

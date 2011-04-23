@@ -1,6 +1,6 @@
 using QuickDotNetCheck.ElaborateExample.Domain;
+using QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers;
 using QuickGenerate;
-using Xunit;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess
 {
@@ -12,12 +12,6 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess
                 new DomainGenerator()
                     .With<Person>(opt => opt.Ignore(person => person.Id))
                     .ForEach<Person>(SaveToSession);
-        }
-
-        [Fact]
-        public void foo()
-        {
-            
-        }            
+        }          
     }
 }
