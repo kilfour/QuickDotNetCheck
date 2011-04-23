@@ -94,9 +94,10 @@ namespace QuickDotNetCheck
             objects = objectFuncs.Select(f => f()).ToList();
             disposables = disposableFuncs.Select(f => f()).ToList();
 
-            var knownspecs = 
+            var knownspecs =
                 fixtureFuncs
                     .SelectMany(f => f().SpecNames())
+                    .Union(doFixtures.SelectMany(f => f().SpecNames()))
                     .ToDictionary(s => s, s => 0);
 
             disposables.ForEach(d => d.Dispose());

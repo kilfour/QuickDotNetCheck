@@ -27,7 +27,7 @@ namespace QuickDotNetCheck
         }
 
         public virtual void Arrange() { }
-
+        
         public virtual bool CanAct()
         {
             return true;
@@ -35,10 +35,13 @@ namespace QuickDotNetCheck
 
         public void Execute()
         {
+            BeforeAct();
             FilterOutSpecsWithFailingPrecondition();
             Act();
             FilterOutSpecsWithFailingPostcondition();
         }
+
+        public virtual void BeforeAct() { }
 
         protected abstract void Act();
 

@@ -73,13 +73,27 @@
     <Compile Include="Domain\DomainDefinition.cs" />
     <Compile Include="Domain\Person.cs" />
     <Compile Include="Domain\IHaveAnId.cs" />
+    <Compile Include="People\Create\CreatePersonHandler.cs" />
+    <Compile Include="People\Create\CreatePersonRequest.cs" />
+    <Compile Include="People\Update\UpdatePersonHandler.cs" />
+    <Compile Include="People\Update\UpdatePersonRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\DataAccess\Helpers\CrudTest.cs" />
     <Compile Include="Tests\DataAccess\Helpers\DatabaseTest.cs" />
     <Compile Include="Tests\DataAccess\PersonCrudTest.cs" />
+    <Compile Include="Tests\People\Create\CreateValidPersonFixture.cs" />
+    <Compile Include="Tests\People\Helpers\NumberOfPeopleInDb.cs" />
+    <Compile Include="Tests\People\PeopleTests.cs" />
+    <Compile Include="Tests\People\Update\UpdateValidPersonFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuickDotNetCheck\QuickDotNetCheck.csproj">
+      <Project>{6406F939-2069-43AF-87D0-CC67A9E60948}</Project>
+      <Name>QuickDotNetCheck</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
