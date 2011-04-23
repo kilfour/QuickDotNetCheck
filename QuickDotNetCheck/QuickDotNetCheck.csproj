@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="QuickGenerate, Version=0.4.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\quickgenerate\QuickGenerate.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -40,8 +44,13 @@
     <Compile Include="IfAfterAttribute.cs" />
     <Compile Include="Reporting\NullReporter.cs" />
     <Compile Include="RunReport.cs" />
+    <Compile Include="ShrinkingStrategies\Get.cs" />
+    <Compile Include="ShrinkingStrategies\Simple.cs" />
+    <Compile Include="ShrinkingStrategy.cs" />
+    <Compile Include="ShrinkingStrategies\CompositeShrinkingStrategy.cs" />
+    <Compile Include="ShrinkingStrategies\IShrinkingStrategy.cs" />
     <Compile Include="SimplestFailCase.cs" />
-    <Compile Include="SimpleValuesShrinkingStrategy.cs" />
+    <Compile Include="ShrinkingStrategies\SimpleValuesShrinkingStrategy.cs" />
     <Compile Include="NotInTheRoot\FactInfo.cs" />
     <Compile Include="IfAttribute.cs" />
     <Compile Include="NotInTheRoot\IFixture.cs" />
@@ -54,7 +63,7 @@
     <Compile Include="Implementation\HardCodeThatDate.cs" />
     <Compile Include="Reporting\IReporter.cs" />
     <Compile Include="Implementation\PropertyInfoExtensions.cs" />
-    <Compile Include="ListShrinkingStrategy.cs" />
+    <Compile Include="ShrinkingStrategies\ListShrinkingStrategy.cs" />
     <Compile Include="Condition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementation\Reflectionize.cs" />

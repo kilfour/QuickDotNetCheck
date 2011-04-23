@@ -26,14 +26,14 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
         {
             var entity = BuildEntity();
 
-            NHibernateSession.Flush();
+            NHibernateSession().Flush();
 
             var entityId = entity.Id;
             var childId = expression.Compile().Invoke(entity).Id;
 
-            NHibernateSession.Clear();
+            NHibernateSession().Clear();
 
-            entity = NHibernateSession.Get<TEntity>(entityId);
+            entity = NHibernateSession().Get<TEntity>(entityId);
 
             Assert.Equal(childId, expression.Compile().Invoke(entity).Id);
         }
@@ -46,14 +46,14 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
                 GenerateAndSaveGenerator()
                 .OneToOne(func).One<TEntity>();
 
-            NHibernateSession.Flush();
+            NHibernateSession().Flush();
 
             var entityId = entity.Id;
             var childId = expression.Compile().Invoke(entity).Id;
 
-            NHibernateSession.Clear();
+            NHibernateSession().Clear();
 
-            entity = NHibernateSession.Get<TEntity>(entityId);
+            entity = NHibernateSession().Get<TEntity>(entityId);
 
             Assert.Equal(childId, expression.Compile().Invoke(entity).Id);
         }
@@ -62,13 +62,13 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
             where TMany : IHaveAnId<TChildId>
         {
             var entity = BuildEntity();
-            NHibernateSession.Flush();
+            NHibernateSession().Flush();
             var manies = expression.Compile().Invoke(entity).ToList();
             Assert.False(manies.Count() == 0, "no entities in many relation");
             var entityId = entity.Id;
             var ids = manies.Select(many => many.Id).ToList();
-            NHibernateSession.Clear();
-            entity = NHibernateSession.Get<TEntity>(entityId);
+            NHibernateSession().Clear();
+            entity = NHibernateSession().Get<TEntity>(entityId);
             manies = expression.Compile().Invoke(entity).ToList();
             foreach (var many in manies)
             {
@@ -85,13 +85,13 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
                 GenerateAndSaveGenerator()
                 .OneToMany(3, func).One<TEntity>();
 
-            NHibernateSession.Flush();
+            NHibernateSession().Flush();
             var manies = expression.Compile().Invoke(entity).ToList();
             Assert.False(manies.Count() == 0, "no entities in many relation");
             var entityId = entity.Id;
             var ids = manies.Select(many => many.Id).ToList();
-            NHibernateSession.Clear();
-            entity = NHibernateSession.Get<TEntity>(entityId);
+            NHibernateSession().Clear();
+            entity = NHibernateSession().Get<TEntity>(entityId);
             manies = expression.Compile().Invoke(entity).ToList();
             foreach (var many in manies)
             {
@@ -102,16 +102,16 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
         [Fact]
         public virtual void SelectQueryWorks()
         {
-            NHibernateSession.CreateCriteria(typeof(TEntity)).SetMaxResults(5).List();
+            NHibernateSession().CreateCriteria(typeof(TEntity)).SetMaxResults(5).List();
         }
 
         [Fact]
         public virtual void AddEntity_EntityWasAdded()
         {
             var entity = BuildEntity();
-            NHibernateSession.Flush();
-            NHibernateSession.Evict(entity);
-            var reloadedEntity = NHibernateSession.Get<TEntity>(entity.Id);
+            NHibernateSession().Flush();
+            NHibernateSession().Evict(entity);
+            var reloadedEntity = NHibernateSession().Get<TEntity>(entity.Id);
             Assert.NotNull(reloadedEntity);
             AssertEqual(entity, reloadedEntity);
             Assert.True(entity.Id.CompareTo(default(TId)) != 0);
@@ -121,13 +121,13 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
         public virtual void UpdateEntity_EntityWasUpdated()
         {
             var entity = BuildEntity();
-            NHibernateSession.Flush();
+            NHibernateSession().Flush();
             var id = entity.Id;
             ModifyEntity(entity);
             entity.Id = id;
             UpdateEntity(entity);
-            NHibernateSession.Evict(entity);
-            var reloadedEntity = NHibernateSession.Get<TEntity>(entity.Id);
+            NHibernateSession().Evict(entity);
+            var reloadedEntity = NHibernateSession().Get<TEntity>(entity.Id);
             Assert.NotNull(reloadedEntity);
             AssertEqual(entity, reloadedEntity);
         }
@@ -136,9 +136,9 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
         public virtual void DeleteEntity_EntityWasDeleted()
         {
             var entity = BuildEntity();
-            NHibernateSession.Flush();
+            NHibernateSession().Flush();
             DeleteEntity(entity);
-            Assert.Null(NHibernateSession.Get<TEntity>(entity.Id));
+            Assert.Null(NHibernateSession().Get<TEntity>(entity.Id));
         }
 
         protected virtual TEntity BuildEntity()
@@ -156,14 +156,14 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
 
         protected virtual void UpdateEntity(TEntity entity)
         {
-            NHibernateSession.Update(entity);
-            NHibernateSession.Flush();
+            NHibernateSession().Update(entity);
+            NHibernateSession().Flush();
         }
 
         protected virtual void DeleteEntity(TEntity entity)
         {
-            NHibernateSession.Delete(entity);
-            NHibernateSession.Flush();
+            NHibernateSession().Delete(entity);
+            NHibernateSession().Flush();
         }
 
         private readonly List<PropertyInfo> properties;

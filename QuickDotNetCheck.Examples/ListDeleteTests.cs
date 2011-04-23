@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuickDotNetCheck.Implementation;
+using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
 using QuickGenerate.Primitives;
 using Xunit;

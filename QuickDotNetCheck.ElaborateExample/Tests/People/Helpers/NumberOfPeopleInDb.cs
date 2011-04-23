@@ -1,21 +1,14 @@
-﻿using NHibernate;
-using NHibernate.Criterion;
+﻿using NHibernate.Criterion;
 using QuickDotNetCheck.ElaborateExample.Domain;
+using QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.People.Helpers
 {
     public class NumberOfPeopleInDb
     {
-        private readonly ISession session;
-
-        public NumberOfPeopleInDb(ISession session)
-        {
-            this.session = session;
-        }
-
         public int Get()
         {
-            return session
+            return DatabaseTest.NHibernateSession()
                 .CreateCriteria<Person>()
                 .SetProjection(Projections.Count("Id"))
                 .UniqueResult<int>();

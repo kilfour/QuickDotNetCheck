@@ -25,7 +25,7 @@ namespace QuickDotNetCheck.ElaborateExample.People.Update
             person.FirstName = request.FirstName;
             person.LastName = request.LastName;
             person.BirthDate = request.BirthDate;
-            person.Title = request.Title;
+            //person.Title = request.Title;
             person.Phone = request.Phone;
         }
     }

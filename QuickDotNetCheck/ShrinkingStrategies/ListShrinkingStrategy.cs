@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using QuickDotNetCheck.Implementation;
 
-namespace QuickDotNetCheck
+namespace QuickDotNetCheck.ShrinkingStrategies
 {
-    public class ListShrinkingStrategy<TEntity, TProperty>
+    public class ListShrinkingStrategy<TEntity, TProperty> : IShrinkingStrategy
     {
         private readonly TEntity target;
 
@@ -41,9 +42,8 @@ namespace QuickDotNetCheck
                     new SimpleValuesShrinkingStrategy<IList<TProperty>, TProperty>(
                         theList,
                         t => t[ix],
-                        (t,i) => t[ix] = i,
-                        simpleValues);
-
+                        (t,i) => t[ix] = i);
+                strategy.AddValues(simpleValues.Cast<object>().ToArray());
                 strategy.Shrink(runFunc);
 
                 if (strategy.Shrunk())
@@ -52,6 +52,11 @@ namespace QuickDotNetCheck
                     index++;
             }
             Result = theList;
+        }
+
+        public bool Shrunk()
+        {
+            return Result.Count == 0;
         }
     }
 }

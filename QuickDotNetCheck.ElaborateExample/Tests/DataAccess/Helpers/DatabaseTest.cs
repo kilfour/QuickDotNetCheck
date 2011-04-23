@@ -7,15 +7,15 @@ using QuickDotNetCheck.ElaborateExample.Domain;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
 {
-    public abstract class DatabaseTest : IDisposable
+    public class DatabaseTest : IDisposable
     {
         private static Configuration configuration;
         private static ISessionFactory sessionFactory;
 
-        public ISession NHibernateSession { get; set; }
+        public static Func<ISession> NHibernateSession { get; set; }
         private readonly ITransaction transaction;
 
-        protected DatabaseTest()
+        public DatabaseTest()
         {
             if (configuration == null)
             {
@@ -34,26 +34,27 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers
                 schemaExport.Create(true, true);
                 sessionFactory = configuration.BuildSessionFactory();
             }
-            NHibernateSession = sessionFactory.OpenSession();
-            transaction = NHibernateSession.BeginTransaction();
+            var session = sessionFactory.OpenSession();
+            NHibernateSession = () => session;
+            transaction = NHibernateSession().BeginTransaction();
         }
 
         public void Dispose()
         {
             transaction.Rollback();
             transaction.Dispose();
-            NHibernateSession.Dispose();
+            NHibernateSession().Dispose();
         }
 
         protected void SaveToSession<T>(T entity)
         {
-            NHibernateSession.Save(entity);
+            NHibernateSession().Save(entity);
         }
 
         protected void FlushAndClear()
         {
-            NHibernateSession.Flush();
-            NHibernateSession.Clear();
+            NHibernateSession().Flush();
+            NHibernateSession().Clear();
         }
     }
 

@@ -1,67 +1,84 @@
-﻿using System.Linq;
-using NHibernate;
+﻿using System;
+using System.Linq;
 using NHibernate.Criterion;
 using QuickDotNetCheck.ElaborateExample.Domain;
 using QuickDotNetCheck.ElaborateExample.People.Update;
+using QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers;
 using QuickDotNetCheck.ElaborateExample.Tests.People.Helpers;
+using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
+using QuickGenerate.Implementation;
+using QuickGenerate.Writing;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
 {
     public class UpdateValidPersonFixture : Fixture
     {
-        private readonly ISession session;
-
-        public UpdateValidPersonFixture(ISession session)
-        {
-            this.session = session;
-        }
-
         private UpdatePersonRequest request;
+        private int numberOfPeopleInDbBeforeAct;
+        private Gatherer<Person> originalPerson;
 
         public override void Arrange()
         {
             var validIds =
-                session
+                DatabaseTest.NHibernateSession()
                     .CreateCriteria<Person>()
                     .SetProjection(Projections.Property("Id"))
                     .List<int>()
                     .ToArray();
-
+            var id = validIds.PickOne();
+            var person = DatabaseTest.NHibernateSession().Get<Person>(id);
+            originalPerson =
+                Gather
+                    .From(person)
+                    .Collect(p => p.Id)
+                    .Collect(p => p.FirstName)
+                    .Collect(p => p.LastName)
+                    .Collect(p => p.Title)
+                    .Collect(p => p.BirthDate)
+                    .Collect(p => p.Phone)
+                    .From(
+                        p => p.Address,
+                        g => g.Collect(a => a.Street)
+                                 .Collect(a => a.PostalCode)
+                                 .Collect(a => a.City)
+                                 .Collect(a => a.Country));
+                    
             request =
                 new DomainGenerator()
-                    .With<UpdatePersonRequest>(opt => opt.For(r => r.Id, validIds))
+                    .WithStringNameCounterPattern()
+                    .With<UpdatePersonRequest>(opt => opt.For(r => r.Id, id))
                     .One<UpdatePersonRequest>();
         }
 
-        private int numberOfPeopleInDbBeforeAct;
+        
 
         public override bool CanAct()
         {
-            return new NumberOfPeopleInDb(session).Get() > 0;
+            return new NumberOfPeopleInDb().Get() > 0;
         }
 
         public override void BeforeAct()
         {
-            numberOfPeopleInDbBeforeAct = new NumberOfPeopleInDb(session).Get();
+            numberOfPeopleInDbBeforeAct = new NumberOfPeopleInDb().Get();
         }
         
         protected override void Act()
         {
-            new UpdatePersonHandler(session).Handle(request);
+            new UpdatePersonHandler(DatabaseTest.NHibernateSession()).Handle(request);
         }
 
         [Spec]
         public void DbContainsTheSameAmountOfPeople()
         {
-            Ensure.Equal(numberOfPeopleInDbBeforeAct, new NumberOfPeopleInDb(session).Get());
+            Ensure.Equal(numberOfPeopleInDbBeforeAct, new NumberOfPeopleInDb().Get());
         }
 
         [Spec]
         public void DbContainsThisPerson()
         {
             var people =
-                session
+                DatabaseTest.NHibernateSession()
                     .CreateCriteria<Person>()
                     .Add(Restrictions.Eq("FirstName", request.FirstName))
                     .Add(Restrictions.Eq("LastName", request.LastName))
@@ -75,6 +92,49 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
                     .List<Person>();
 
             Ensure.GreaterThan(0, people.Count);
+        }
+
+        private CompositeShrinkingStrategy<UpdatePersonRequest> shrinkingStrategy;
+
+        public override void Shrink(Func<bool> runFunc)
+        {
+            originalPerson.Recall(e => e.FirstName);
+            shrinkingStrategy =
+                ShrinkingStrategy.For(request)
+                    .Add(Simple.Values<int>())
+                    .Add(Simple.Values<String>())
+                    .Add(Simple.Values<DateTime>())
+                    .Add(Get.From(request).All<string>())
+                    .Add(Get.From(request).All<int>())
+                    .Add(Get.From(request).All<DateTime>())
+                    .Add(originalPerson.Collected<int>())
+                    .Add(originalPerson.Collected<string>())
+                    .Add(originalPerson.Collected<DateTime>())
+                    .Register(e => e.FirstName)
+                    .Register(e => e.LastName)
+                    .Register(e => e.Title)
+                    .Register(e => e.BirthDate)
+                    .Register(e => e.AddressStreet)
+                    .Register(e => e.AddressCity)
+                    .Register(e => e.AddressPostalCode)
+                    .Register(e => e.AddressCountry)
+                    .Register(e => e.LastName)
+                    .Register(e => e.Phone);
+
+            shrinkingStrategy.Shrink(runFunc);
+        }
+
+        public override string ToString()
+        {
+            var stream = new StringStream();
+            stream.Write(GetType().Name);
+            stream.WriteLine();
+            stream.Write("Id : ");
+            stream.Write(request.Id.ToString());
+            stream.Write(" .");
+            stream.WriteLine();
+            stream.Write(shrinkingStrategy.Report());
+            return stream.ToReader().ReadToEnd();
         }
     }
 }

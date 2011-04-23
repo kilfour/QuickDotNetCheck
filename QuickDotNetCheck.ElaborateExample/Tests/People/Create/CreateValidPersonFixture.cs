@@ -2,6 +2,7 @@
 using NHibernate.Criterion;
 using QuickDotNetCheck.ElaborateExample.Domain;
 using QuickDotNetCheck.ElaborateExample.People.Create;
+using QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers;
 using QuickDotNetCheck.ElaborateExample.Tests.People.Helpers;
 using QuickGenerate;
 
@@ -9,14 +10,8 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
 {
     public class CreateValidPersonFixture : Fixture
     {
-        private readonly ISession session;
         private CreatePersonRequest request;
         private int numberOfPeopleInDbBeforeAct;
-
-        public CreateValidPersonFixture(ISession session)
-        {
-            this.session = session;
-        }
 
         public override void Arrange()
         {
@@ -27,25 +22,25 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
 
         public override void BeforeAct()
         {
-            numberOfPeopleInDbBeforeAct = new NumberOfPeopleInDb(session).Get();
+            numberOfPeopleInDbBeforeAct = new NumberOfPeopleInDb().Get();
         }
 
         protected override void Act()
         {
-            new CreatePersonHandler(session).Handle(request);
+            new CreatePersonHandler(DatabaseTest.NHibernateSession()).Handle(request);
         }
 
         [Spec]
         public void DbContainsOneMorePerson()
         {
-            Ensure.Equal(numberOfPeopleInDbBeforeAct + 1, new NumberOfPeopleInDb(session).Get());
+            Ensure.Equal(numberOfPeopleInDbBeforeAct + 1, new NumberOfPeopleInDb().Get());
         }
 
         [Spec]
         public void DbContainsThisPerson()
         {
             var people =
-                session
+                DatabaseTest.NHibernateSession()
                     .CreateCriteria<Person>()
                     .Add(Restrictions.Eq("FirstName", request.FirstName))
                     .Add(Restrictions.Eq("LastName", request.LastName))

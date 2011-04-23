@@ -1,5 +1,5 @@
 ﻿using System;
-using QuickDotNetCheck;
+using QuickDotNetCheck.ShrinkingStrategies;
 using Xunit;
 
 namespace QuickDotNetCheckTests
@@ -18,8 +18,8 @@ namespace QuickDotNetCheckTests
 
             var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
                 this,
-                e => e.theInt, 
-                new[]{- 1, 0, 1});
+                e => e.theInt);
+            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
 
             shrinkStrat.Shrink(runFunc);
 
@@ -41,8 +41,8 @@ namespace QuickDotNetCheckTests
             var shrinkStrat = 
                 new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
                     this,
-                    e => e.theInt, 
-                    new[]{- 1, 0, 1});
+                    e => e.theInt);
+            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
             shrinkStrat.Shrink(runFunc);
 
             Assert.False(shrinkStrat.Shrunk());
@@ -58,9 +58,8 @@ namespace QuickDotNetCheckTests
             var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
                 this,
                 e => e.theInt,
-                (e, i) => e.theInt = i,
-                new[] { -1, 0, 1 });
-
+                (e, i) => e.theInt = i);
+            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
             shrinkStrat.Shrink(runFunc);
 
             Assert.True(shrinkStrat.Shrunk());
@@ -82,8 +81,8 @@ namespace QuickDotNetCheckTests
                 new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests, int>(
                     this,
                     e => e.theInt,
-                    (e, i) => e.theInt = i,
-                    new[] { -1, 0, 1 });
+                    (e, i) => e.theInt = i);
+            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
             shrinkStrat.Shrink(runFunc);
 
             Assert.False(shrinkStrat.Shrunk());

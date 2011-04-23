@@ -54,8 +54,11 @@
     <Compile Include="EnsureTests.cs" />
     <Compile Include="PreconditionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShrinkingAListTests.cs" />
-    <Compile Include="ShrinkingAnIntTests.cs" />
+    <Compile Include="ShrinkingTests\ShrinkingAListTests.cs" />
+    <Compile Include="ShrinkingTests\ShrinkingAnIntTests.cs" />
+    <Compile Include="ShrinkingTests\ShrinkingAnObjectTests.cs" />
+    <Compile Include="ShrinkingTests\ShrinkingAnObjectTestsRemovingBookkeepingRegisterAllTests.cs" />
+    <Compile Include="ShrinkingTests\ShrinkingAnObjectTestsRemovingDuplicateBookkeepingTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesWithDoShrinkingTransitionsTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesWithDoTests.cs" />

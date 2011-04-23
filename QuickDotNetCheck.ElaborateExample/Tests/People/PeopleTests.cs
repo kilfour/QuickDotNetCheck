@@ -5,19 +5,19 @@ using Xunit;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.People
 {
-    public class PeopleTests : DatabaseTest
+    public class PeopleTests
     {
         [Fact]
         public void All()
         {
             var report =
                 new Suite(1, 10)
-                    .Register(() => new CreateValidPersonFixture(NHibernateSession))
-                    .Register(() => new UpdateValidPersonFixture(NHibernateSession))
+                    .Using(() => new DatabaseTest())
+                    .Register(() => new CreateValidPersonFixture())
+                    .Register(() => new UpdateValidPersonFixture())
                     .Run();
 
             Assert.True(report.Succeeded(), report.Report());
         }
-
     }
 }

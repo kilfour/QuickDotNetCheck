@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate.Primitives;
 using Xunit;
 
@@ -69,8 +70,8 @@ namespace QuickDotNetCheck.Examples
             shrunk =
                 new SimpleValuesShrinkingStrategy<BugHouseFixture, int>(
                     this,
-                    e => e.input, new[] {-1, 0, 1});
-
+                    e => e.input);
+            shrunk.AddValues(new object[] { -1, 0, 1 });
             shrunk.Shrink(runFunc);
         }
 

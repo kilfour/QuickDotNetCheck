@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuickDotNetCheck;
+using QuickDotNetCheck.ShrinkingStrategies;
 using Xunit;
 
-namespace QuickDotNetCheckTests
+namespace QuickDotNetCheckTests.ShrinkingTests
 {
     public class ShrinkingAListTests
     {

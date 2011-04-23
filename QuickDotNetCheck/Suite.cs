@@ -187,7 +187,7 @@ namespace QuickDotNetCheck
                 }
                 catch(Exception ex)
                 {
-                    if (ex.Message == LastException.Message)
+                    if (LastException != null && ex.Message == LastException.Message)
                     {
                         disposables.ForEach(d => d.Dispose());
                         Reporter = oldReporter;
@@ -251,20 +251,6 @@ namespace QuickDotNetCheck
         private void WriteSimplestFailCaseToReporter(SimplestFailCase simplestFailcase)
         {
             Reporter.WriteLine(simplestFailcase.Report());
-        }
-
-        private void ReportFailure(int testNumber, int transitionNumber, FalsifiableException failure)
-        {
-            var sbReport = new StringBuilder();
-            sbReport.AppendLine("----------------------------------------------------------");
-            sbReport.AppendLine(failure.Message);
-            if (failure.InnerException != null)
-                sbReport.AppendLine(failure.InnerException.Message);
-            sbReport.AppendFormat(
-                "Falsifiable after {0} test(s), {1} Actions(s).",
-                testNumber,
-                transitionNumber);
-            Reporter.WriteLine(sbReport.ToString());
         }
     }
 }
