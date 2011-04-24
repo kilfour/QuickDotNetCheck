@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using QuickDotNetCheck.ShrinkingStrategies;
+using QuickDotNetCheck.ShrinkingStrategies.Manipulations;
 using QuickGenerate.Primitives;
 using Xunit;
 
