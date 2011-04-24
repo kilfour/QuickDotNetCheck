@@ -41,7 +41,7 @@ namespace QuickDotNetCheck.ShrinkingStrategies
                 //var strategy = new ManipulationStrategy();
                 //foreach (var @object in simpleValues.Cast<object>().ToArray())
                 //{
-                //    strategy.Add(Manipulate.This(theList).Change(t => t[ix], @object));
+                //    strategy.Add(Manipulate.This(theList).Change(t => t[ix], (t,i) => t[ix] = (TProperty)i, @object));
                 //}
 
                 var strategy =

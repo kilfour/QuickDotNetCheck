@@ -4,11 +4,13 @@ using NHibernate.Criterion;
 using QuickDotNetCheck.ElaborateExample.Domain;
 using QuickDotNetCheck.ElaborateExample.People.Update;
 using QuickDotNetCheck.ElaborateExample.Tests.DataAccess.Helpers;
+using QuickDotNetCheck.ElaborateExample.Tests.People.Create;
 using QuickDotNetCheck.ElaborateExample.Tests.People.Helpers;
 using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
 using QuickGenerate.Implementation;
 using QuickGenerate.Writing;
+using Xunit;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
 {
@@ -17,6 +19,16 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
         private UpdatePersonRequest request;
         private int numberOfPeopleInDbBeforeAct;
         private Gatherer<Person> originalPerson;
+
+        [Fact]
+        public void Verify()
+        {
+            new Suite(2, 5)
+                .Using(() => new DatabaseTest())
+                .Do(() => new CreateValidPersonFixture())
+                .Register(() => new UpdateValidPersonFixture())
+                .Run();
+        }
 
         public override void Arrange()
         {
@@ -76,11 +88,6 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
         [Spec]
         public void DbContainsThisPerson()
         {
-            var allpeople =
-                DatabaseTest.NHibernateSession()
-                    .CreateCriteria<Person>()
-                    .List<Person>();
-
             var people =
                 DatabaseTest.NHibernateSession()
                     .CreateCriteria<Person>()
