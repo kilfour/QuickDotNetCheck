@@ -16,10 +16,13 @@ namespace QuickDotNetCheck
         protected Fixture()
         {
             testMethods = new Dictionary<MethodInfo, FactInfo>();
-            GetType()
+            var specs = GetType()
                 .GetMethods()
-                .Where(mi => mi.HasAttribute<SpecAttribute>())
-                .ForEach(mi => testMethods[mi] = new FactInfo {Name = GetType().Name + "." + mi.Name});
+                .Where(mi => mi.HasAttribute<SpecAttribute>());
+            foreach (var mi in specs)
+            {
+                testMethods[mi] = new FactInfo {Name = GetType().Name + "." + mi.Name};
+            }
         }
 
         public IEnumerable<string> SpecNames()
@@ -66,9 +69,11 @@ namespace QuickDotNetCheck
         }
         public IEnumerable<string> Assert()
         {
-            factsToCheck
-                .ForEach(mi => testMethods[mi].TimesExecuted++)
-                .ForEach(AssertSpec);
+            foreach (var mi in factsToCheck)
+            {
+                testMethods[mi].TimesExecuted++;
+                AssertSpec(mi);
+            }
 
             return
                 factsToCheck

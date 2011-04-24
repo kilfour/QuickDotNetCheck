@@ -64,8 +64,6 @@
     <Compile Include="Ensure.cs" />
     <Compile Include="Exceptions\FalsifiableException.cs" />
     <Compile Include="Fixture.cs" />
-    <Compile Include="Implementation\EnumerableForEachExtension.cs" />
-    <Compile Include="Implementation\EnumerablePickOneExtension.cs" />
     <Compile Include="Implementation\HardCodeThatDate.cs" />
     <Compile Include="Reporting\IReporter.cs" />
     <Compile Include="Implementation\PropertyInfoExtensions.cs" />

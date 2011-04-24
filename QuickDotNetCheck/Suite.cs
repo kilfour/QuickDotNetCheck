@@ -6,6 +6,7 @@ using QuickDotNetCheck.Exceptions;
 using QuickDotNetCheck.Implementation;
 using QuickDotNetCheck.NotInTheRoot;
 using QuickDotNetCheck.Reporting;
+using QuickGenerate;
 
 namespace QuickDotNetCheck
 {
@@ -118,7 +119,10 @@ namespace QuickDotNetCheck
                         fixture.Arrange();
                         fixture.Execute();
                         var testedSpecs = fixture.Assert();
-                        testedSpecs.ForEach(s => knownspecs[s]++);
+                        foreach (var testedSpec in testedSpecs)
+                        {
+                            knownspecs[testedSpec]++;
+                        }
                     }
                     for (int ix = 0; ix < numberOfFixtures; ix++)
                     {
@@ -130,13 +134,19 @@ namespace QuickDotNetCheck
                         {
                             fixture.Execute();
                             var testedSpecs = fixture.Assert();
-                            testedSpecs.ForEach(s => knownspecs[s]++);
+                            foreach (var testedSpec in testedSpecs)
+                            {
+                                knownspecs[testedSpec]++;
+                            }
                         }
                         catch (Exception e)
                         {
                             LastException = e;
                             var testedSpecs = fixture.Assert();
-                            testedSpecs.ForEach(s => knownspecs[s]++);
+                            foreach (var testedSpec in testedSpecs)
+                            {
+                                knownspecs[testedSpec]++;
+                            }
                             if (LastException != null)
                                 throw;
                         }

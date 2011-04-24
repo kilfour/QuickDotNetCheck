@@ -78,7 +78,10 @@ namespace QuickDotNetCheck.Examples
             sb.AppendLine(GetType().Name);
 
             sb.Append("inputList : ");
-            inputList.ForEach(i => sb.AppendFormat("{0}, ", i));
+            foreach (var input in inputList)
+            {
+                sb.AppendFormat("{0}, ", input);
+            }
             sb.Remove(sb.Length - 2, 2);
             sb.Append(".");
             sb.AppendLine();
