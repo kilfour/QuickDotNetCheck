@@ -62,16 +62,16 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
             Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Phone", request.Phone)));
         }
 
-        private ManipulationStrategy manipulationStrategy;
+        private ShrinkingStrategy shrinkingStrategy;
 
         public override void Shrink(Func<bool> runFunc)
         {
-            manipulationStrategy =
-                new ManipulationStrategy()
+            shrinkingStrategy =
+                new ShrinkingStrategy()
                     .Add(Simple.AllValues())
                     .RegisterAll(request);
             
-            manipulationStrategy.Shrink(runFunc);
+            shrinkingStrategy.Shrink(runFunc);
         }
 
         public override string ToString()
@@ -79,7 +79,7 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
             var stream = new StringStream();
             stream.Write(GetType().Name);
             stream.WriteLine();
-            stream.Write(manipulationStrategy.Report());
+            stream.Write(shrinkingStrategy.Report());
             return stream.ToReader().ReadToEnd();
         }
     }

@@ -38,7 +38,7 @@ namespace QuickDotNetCheck.ShrinkingStrategies
             {
                 int ix = index;
 
-                //var strategy = new ManipulationStrategy();
+                //var strategy = new ShrinkingStrategy();
                 //foreach (var @object in simpleValues.Cast<object>().ToArray())
                 //{
                 //    strategy.Add(Manipulate.This(theList).Change(t => t[ix], (t,i) => t[ix] = (TProperty)i, @object));

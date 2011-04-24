@@ -17,7 +17,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
                     };
 
             var composite =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Simple.AllValues())
                     .RegisterAll(something);
 
@@ -40,7 +40,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
                         PropertyThree = 42,
                     };
             var composite =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Simple.AllValues())
                     .RegisterAll(something);
 
@@ -63,7 +63,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
                     PropertyThree = 42,
                 };
             var composite =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Simple.AllValues())
                     .Add(Get.From(something).AllValues())
                     .RegisterAll(something);

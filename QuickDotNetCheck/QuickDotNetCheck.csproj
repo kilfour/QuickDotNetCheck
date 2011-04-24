@@ -45,6 +45,7 @@
     <Compile Include="Reporting\NullReporter.cs" />
     <Compile Include="RunReport.cs" />
     <Compile Include="ShrinkingStrategies\Get.cs" />
+    <Compile Include="ShrinkingStrategies\ShrinkingStrategy.cs" />
     <Compile Include="ShrinkingStrategies\Simple.cs" />
     <Compile Include="ShrinkingStrategies\IShrinkingStrategy.cs" />
     <Compile Include="SimplestFailCase.cs" />

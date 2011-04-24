@@ -15,7 +15,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
             var something = Generate.One<SomethingToShrink>();
             something.IntProperty = 42;
             var composite =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(-1, 0, 1)
                     .Ignore<SomethingToShrink, int>(e => e.IntProperty)
                     .RegisterAll(something);

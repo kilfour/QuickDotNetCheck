@@ -38,12 +38,12 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
             Ensure.Equal(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Id", request.Id)));
         }
 
-        private ManipulationStrategy shrinkingStrategy;
+        private ShrinkingStrategy shrinkingStrategy;
 
         public override void Shrink(Func<bool> runFunc)
         {
             shrinkingStrategy =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Simple.AllValues())
                     .Add(Get.From(request).AllValues())
                     .Ignore<UpdatePersonRequest,int>(e => e.Id)

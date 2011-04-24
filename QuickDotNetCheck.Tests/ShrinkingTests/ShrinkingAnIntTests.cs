@@ -17,7 +17,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
             theInt = 42;
 
             var shrinkStrat =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Manipulate.This(this)
                              .Change(e => e.theInt, -1)
                              .Change(e => e.theInt, 0)
@@ -41,7 +41,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
             theInt = 42;
 
             var shrinkStrat =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Manipulate.This(this)
                              .Change(e => e.theInt, -1)
                              .Change(e => e.theInt, 0)

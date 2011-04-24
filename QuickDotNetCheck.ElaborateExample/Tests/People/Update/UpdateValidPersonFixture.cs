@@ -105,12 +105,12 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
             Ensure.GreaterThan(0, people.Count);
         }
 
-        private ManipulationStrategy shrinkingStrategy;
+        private ShrinkingStrategy shrinkingStrategy;
 
         public override void Shrink(Func<bool> runFunc)
         {
             shrinkingStrategy =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Simple.AllValues())
                     .AddNull<string>()
                     .Add(Get.From(request).AllValues())

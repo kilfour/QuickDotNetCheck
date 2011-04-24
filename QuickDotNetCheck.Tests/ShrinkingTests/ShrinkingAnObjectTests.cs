@@ -12,7 +12,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
         {
             var something = Generate.One<SomethingToShrink>();
             var composite =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(-1, 0, 1, "")
                     .AddNull<string>()
                     .RegisterAll(something);
@@ -29,7 +29,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
         {
             var something = Generate.One<SomethingToShrink>();
             var composite =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(-1, 0, 1, "")
                     .AddNull<string>()
                     .RegisterAll(something);

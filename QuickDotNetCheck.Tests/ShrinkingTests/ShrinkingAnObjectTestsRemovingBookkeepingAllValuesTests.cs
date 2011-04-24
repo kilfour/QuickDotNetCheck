@@ -13,7 +13,7 @@ namespace QuickDotNetCheckTests.ShrinkingTests
             var something = Generate.One<SomethingToShrink>();
             something.IntProperty = 42;
             var composite =
-                new ManipulationStrategy()
+                new ShrinkingStrategy()
                     .Add(Simple.AllValues())
                     .Register(something, e => e.IntProperty)
                     .Register(something, e => e.StringProperty);
