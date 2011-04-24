@@ -173,20 +173,24 @@ namespace QuickDotNetCheck
                 try
                 {
                     var fixture = actionsCopy.ElementAt(ix);
-                    fixture.Execute();
-                    fixture.Assert();
-                }
-                catch (FalsifiableException failure)
-                {
-                    if (failure.Message == previousFailure.Message)
+                    if (fixture.CanAct())
                     {
-                        disposables.ForEach(d => d.Dispose());
-                        Reporter = oldReporter;
-                        return true;
+                        fixture.Execute();
+                        if (ix == actionsCopy.Count - 1)
+                        {
+                            var action =
+                                (Action) Delegate.CreateDelegate(typeof (Action), fixture, previousFailure.Spec);
+                            action();
+                        }
                     }
-                    break;
                 }
-                catch(Exception ex)
+                catch (FalsifiableException)
+                {
+                    disposables.ForEach(d => d.Dispose());
+                    Reporter = oldReporter;
+                    return true;
+                }
+                catch (Exception ex)
                 {
                     if (LastException != null && ex.Message == LastException.Message)
                     {
@@ -233,7 +237,7 @@ namespace QuickDotNetCheck
             var simplestFailCase = new SimplestFailCase(fixtures);
 
             int ix = 0;
-            while (ix < simplestFailCase.Fixtures.Count)
+            while (ix < simplestFailCase.Fixtures.Count - 1)
             {
                 var lessActions = new List<IFixture>(simplestFailCase.Fixtures);
                 lessActions.RemoveAt(ix);

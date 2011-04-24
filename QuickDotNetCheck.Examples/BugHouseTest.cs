@@ -60,13 +60,16 @@ namespace QuickDotNetCheck.Examples
             output = suite.Get<BugHouseFixtureState>().BugHouse.Run(input);
         }
 
-        private SimpleValuesShrinkingStrategy<BugHouseFixture> shrunk;
+        private ManipulationStrategy shrunk;
 
         public override void Shrink(Func<bool> runFunc)
         {
             shrunk =
-                new SimpleValuesShrinkingStrategy<BugHouseFixture>(this, e => e.input);
-            shrunk.AddValues(new object[] { -1, 0, 1 });
+                new ManipulationStrategy()
+                    .Add(Manipulate.This(this)
+                             .Change(e => e.input, -1)
+                             .Change(e => e.input, 0)
+                             .Change(e => e.input, 1));
             shrunk.Shrink(runFunc);
         }
 

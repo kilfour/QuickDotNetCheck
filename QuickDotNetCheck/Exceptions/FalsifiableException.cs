@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Text;
 
 namespace QuickDotNetCheck.Exceptions
@@ -7,7 +8,9 @@ namespace QuickDotNetCheck.Exceptions
     {
         public FalsifiableException(string expected, string actual) 
             : base( BuildMessage( expected, actual) ) { }
-	
+
+        public MethodInfo Spec { get; set; }
+
         private static string BuildMessage(string expected, string actual)
         {
             var sbMessage = new StringBuilder();

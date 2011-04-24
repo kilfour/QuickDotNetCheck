@@ -2,7 +2,7 @@
 using QuickDotNetCheck.ShrinkingStrategies;
 using Xunit;
 
-namespace QuickDotNetCheckTests
+namespace QuickDotNetCheckTests.ShrinkingTests
 {
     public class ShrinkingAnIntTests
     {
@@ -16,10 +16,12 @@ namespace QuickDotNetCheckTests
 
             theInt = 42;
 
-            var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
-                this,
-                e => e.theInt);
-            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
+            var shrinkStrat =
+                new ManipulationStrategy()
+                    .Add(Manipulate.This(this)
+                             .Change(e => e.theInt, -1)
+                             .Change(e => e.theInt, 0)
+                             .Change(e => e.theInt, 1));
 
             shrinkStrat.Shrink(runFunc);
 
@@ -38,56 +40,16 @@ namespace QuickDotNetCheckTests
 
             theInt = 42;
 
-            var shrinkStrat = 
-                new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
-                    this,
-                    e => e.theInt);
-            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
-            shrinkStrat.Shrink(runFunc);
-
-            Assert.False(shrinkStrat.Shrunk());
-        }
-
-        [Fact]
-        public void SimpleShrinking_Alternative_Constructor()
-        {
-            Func<bool> runFunc = () => true; // means fail always
-
-            theInt = 42;
-
-            var shrinkStrat = new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
-                this,
-                e => e.theInt,
-                (e, i) => e.theInt = (int)i);
-            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
-            shrinkStrat.Shrink(runFunc);
-
-            Assert.True(shrinkStrat.Shrunk());
-        }
-
-        [Fact]
-        public void NotShrinking_Alternative_Constructor()
-        {
-            Func<bool> runFunc =
-                () =>
-                {
-                    if (theInt == 42) return true; // means failure
-                    return false;
-                };
-
-            theInt = 42;
-
             var shrinkStrat =
-                new SimpleValuesShrinkingStrategy<ShrinkingAnIntTests>(
-                    this,
-                    e => e.theInt,
-                    (e, i) => e.theInt = (int)i);
-            shrinkStrat.AddValues(new object[] { -1, 0, 1 });
+                new ManipulationStrategy()
+                    .Add(Manipulate.This(this)
+                             .Change(e => e.theInt, -1)
+                             .Change(e => e.theInt, 0)
+                             .Change(e => e.theInt, 1));
+
             shrinkStrat.Shrink(runFunc);
 
             Assert.False(shrinkStrat.Shrunk());
         }
     }
-
-    
 }

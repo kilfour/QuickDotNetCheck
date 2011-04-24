@@ -20,6 +20,21 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
 
         public override void Arrange()
         {
+            request =
+                new DomainGenerator()
+                    .WithStringNameCounterPattern(1000)
+                    .One<UpdatePersonRequest>();
+        }
+
+        public override bool CanAct()
+        {
+            return new NumberOfPeopleInDb().Get() > 0;
+        }
+
+        public override void BeforeAct()
+        {
+            numberOfPeopleInDbBeforeAct = new NumberOfPeopleInDb().Get();
+
             var validIds =
                 DatabaseTest.NHibernateSession()
                     .CreateCriteria<Person>()
@@ -43,22 +58,8 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
                                  .Collect(a => a.PostalCode)
                                  .Collect(a => a.City)
                                  .Collect(a => a.Country));
-                    
-            request =
-                new DomainGenerator()
-                    .WithStringNameCounterPattern()
-                    .With<UpdatePersonRequest>(opt => opt.For(r => r.Id, id))
-                    .One<UpdatePersonRequest>();
-        }
 
-        public override bool CanAct()
-        {
-            return new NumberOfPeopleInDb().Get() > 0;
-        }
-
-        public override void BeforeAct()
-        {
-            numberOfPeopleInDbBeforeAct = new NumberOfPeopleInDb().Get();
+            request.Id = id;
         }
         
         protected override void Act()
@@ -73,62 +74,13 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
         }
 
         [Spec]
-        public void DbContainsPersonWithFirstName()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("FirstName", request.FirstName)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithLastName()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("LastName", request.LastName)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithTitle()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Title", request.Title)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithBirthDate()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("BirthDate", request.BirthDate)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithAddressStreet()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.Street", request.AddressStreet)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithAddressCity()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.City", request.AddressCity)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithAddressPostalCode()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.PostalCode", request.AddressPostalCode)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithAddressCountry()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Address.Country", request.AddressCountry)));
-        }
-
-        [Spec]
-        public void DbContainsPersonWithPhone()
-        {
-            Ensure.GreaterThan(0, new NumberOfPeopleInDbWhere().Get(Restrictions.Eq("Phone", request.Phone)));
-        }
-
-        [Spec]
         public void DbContainsThisPerson()
         {
+            var allpeople =
+                DatabaseTest.NHibernateSession()
+                    .CreateCriteria<Person>()
+                    .List<Person>();
+
             var people =
                 DatabaseTest.NHibernateSession()
                     .CreateCriteria<Person>()
@@ -153,6 +105,7 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
             shrinkingStrategy =
                 ShrinkingStrategy.For(request)
                     .Add(Simple.AllValues())
+                    .AddNull<string>()
                     .Add(Get.From(request).AllValues())
                     .Add(originalPerson.AllCollected())
                     .Add(originalPerson.RecallFrom(p => p.Address).AllCollected())

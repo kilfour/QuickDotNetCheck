@@ -17,6 +17,9 @@ namespace QuickDotNetCheck.ShrinkingStrategies
         
         private readonly List<PropertyInfo> propertiesToIgnore = new List<PropertyInfo>();
 
+        private readonly Dictionary<Type, List<object>> simpleValues =
+            new Dictionary<Type, List<object>>();
+
         public CompositeShrinkingStrategy(TEntity entity)
         {
             this.entity = entity;
@@ -84,9 +87,6 @@ namespace QuickDotNetCheck.ShrinkingStrategies
             return shrinkingStrategies[propertyExpression.AsPropertyInfo()];
         }
 
-        private readonly Dictionary<Type, List<object>> simpleValues =
-            new Dictionary<Type, List<object>>();
-
         public CompositeShrinkingStrategy<TEntity> Add(params object[] values)
         {
             foreach (var value in values)
@@ -95,6 +95,14 @@ namespace QuickDotNetCheck.ShrinkingStrategies
                     simpleValues[value.GetType()] = new List<object>();
                 simpleValues[value.GetType()].Add(value);
             }
+            return this;
+        }
+
+        public CompositeShrinkingStrategy<TEntity> AddNull<TProperty>()
+        {
+            if (!simpleValues.ContainsKey(typeof(TProperty)))
+                simpleValues[typeof(TProperty)] = new List<object>();
+            simpleValues[typeof(TProperty)].Add(null);
             return this;
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using QuickDotNetCheck.Exceptions;
 using QuickDotNetCheck.Implementation;
 using QuickDotNetCheck.NotInTheRoot;
 
@@ -51,6 +52,11 @@ namespace QuickDotNetCheck
             {
                 var action = (Action)Delegate.CreateDelegate(typeof (Action), this, info);
                 action();
+            }
+            catch (FalsifiableException failure)
+            {
+                failure.Spec = info;
+                throw;
             }
             catch (Exception)
             {

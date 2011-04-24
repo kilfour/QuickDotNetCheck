@@ -23,8 +23,8 @@ namespace QuickDotNetCheck.ElaborateExample.People.Create
 
             var person =
                 new Person(
-                    request.FirstName,
-                    request.LastName,
+                    "", //request.FirstName,
+                    "",//request.LastName,
                     address,
                     request.BirthDate)
                     {
