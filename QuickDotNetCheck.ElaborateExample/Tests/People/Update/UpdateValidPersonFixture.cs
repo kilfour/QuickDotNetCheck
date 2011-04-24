@@ -98,19 +98,19 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Update
             Ensure.GreaterThan(0, people.Count);
         }
 
-        private CompositeShrinkingStrategy<UpdatePersonRequest> shrinkingStrategy;
+        private ManipulationStrategy shrinkingStrategy;
 
         public override void Shrink(Func<bool> runFunc)
         {
             shrinkingStrategy =
-                ShrinkingStrategy.For(request)
+                new ManipulationStrategy()
                     .Add(Simple.AllValues())
                     .AddNull<string>()
                     .Add(Get.From(request).AllValues())
                     .Add(originalPerson.AllCollected())
                     .Add(originalPerson.RecallFrom(p => p.Address).AllCollected())
-                    .Ignore(e => e.Id)
-                    .RegisterAll();
+                    .Ignore<UpdatePersonRequest,int>(e => e.Id)
+                    .RegisterAll(request);
 
             shrinkingStrategy.Shrink(runFunc);
         }
