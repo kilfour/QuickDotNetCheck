@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using QuickDotNetCheck.Implementation;
+using QuickDotNetCheck.ShrinkingStrategies.Manipulations;
 using QuickGenerate.Writing;
 
 namespace QuickDotNetCheck.ShrinkingStrategies
@@ -80,7 +81,7 @@ namespace QuickDotNetCheck.ShrinkingStrategies
             {
                 foreach (var simpleValue in simpleValues.First(pair => propertyInfo.PropertyType.IsAssignableFrom(pair.Key)).Value.ToArray())
                 {
-                    var manipulation = new Manipulation<TEntity>(entity, propertyInfo, simpleValue);
+                    var manipulation = new ManipulationLeaf<TEntity>(entity, propertyInfo, simpleValue);
                     manipulations.Add(manipulation);
                 }
             }

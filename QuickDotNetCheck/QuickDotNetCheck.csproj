@@ -39,12 +39,19 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IfAfterAttribute.cs" />
     <Compile Include="Reporting\NullReporter.cs" />
     <Compile Include="RunReport.cs" />
     <Compile Include="ShrinkingStrategies\Get.cs" />
+    <Compile Include="ShrinkingStrategies\Manipulations\ManipulationLeaf.cs" />
+    <Compile Include="ShrinkingStrategies\Manipulations\IManipulation.cs" />
+    <Compile Include="ShrinkingStrategies\Manipulations\Manipulate.cs" />
+    <Compile Include="ShrinkingStrategies\Manipulations\Manipulation.cs" />
+    <Compile Include="ShrinkingStrategies\Manipulations\Manipulator.cs" />
     <Compile Include="ShrinkingStrategies\ShrinkingStrategy.cs" />
     <Compile Include="ShrinkingStrategies\Simple.cs" />
     <Compile Include="ShrinkingStrategies\IShrinkingStrategy.cs" />

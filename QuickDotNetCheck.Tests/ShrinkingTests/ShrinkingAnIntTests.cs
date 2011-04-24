@@ -1,5 +1,6 @@
 ﻿using System;
 using QuickDotNetCheck.ShrinkingStrategies;
+using QuickDotNetCheck.ShrinkingStrategies.Manipulations;
 using Xunit;
 
 namespace QuickDotNetCheckTests.ShrinkingTests
