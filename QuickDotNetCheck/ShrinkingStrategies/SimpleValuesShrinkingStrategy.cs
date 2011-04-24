@@ -179,6 +179,12 @@ namespace QuickDotNetCheck.ShrinkingStrategies
 
         private Dictionary<string, bool> shrunk;
 
+        public bool Shrunk<TEntity, TProperty>(TEntity entity, Expression<Func<TEntity, TProperty>> propertyExpression)
+        {
+            var key = string.Format("{0},{1}", entity.GetType().Name, propertyExpression.AsPropertyInfo().Name);
+            return shrunk[key];
+        }
+
         public ManipulationStrategy Add(params object[] values)
         {
             foreach (var value in values)

@@ -184,11 +184,23 @@ namespace QuickDotNetCheck
                         }
                     }
                 }
-                catch (FalsifiableException)
+                catch (FalsifiableException ex)
                 {
-                    disposables.ForEach(d => d.Dispose());
-                    Reporter = oldReporter;
-                    return true;
+                    //FIXME
+                    string exLine = 
+                        ex.StackTrace
+                        .Split(new[]{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
+                        .Single(s => s.Contains(previousFailure.Spec.Name));
+                    string previousFailureLine = 
+                        previousFailure.StackTrace
+                        .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                        .Single(s => s.Contains(previousFailure.Spec.Name));
+                    if (exLine.Equals(previousFailureLine))
+                    {
+                        disposables.ForEach(d => d.Dispose());
+                        Reporter = oldReporter;
+                        return true;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -229,7 +241,11 @@ namespace QuickDotNetCheck
 
         private void ShrinkFixtures(SimplestFailCase simplestFailcase, FalsifiableException previousFailure)
         {
-            simplestFailcase.Fixtures.ForEach(f => f.Shrink(() => Fails(simplestFailcase.Fixtures, previousFailure)));
+            simplestFailcase
+                .Fixtures
+                .ForEach(
+                    f => f.Shrink(
+                        () => Fails(simplestFailcase.Fixtures, previousFailure)));
         }
 
         private SimplestFailCase ShrinkTransitionsList(List<IFixture> fixtures, FalsifiableException previousFailure)

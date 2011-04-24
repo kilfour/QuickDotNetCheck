@@ -44,11 +44,15 @@
     <Compile Include="IfAfterAttribute.cs" />
     <Compile Include="Reporting\NullReporter.cs" />
     <Compile Include="RunReport.cs" />
+    <Compile Include="ShrinkingStrategies\CompositeShrinkingStrategy.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ShrinkingStrategies\Get.cs" />
     <Compile Include="ShrinkingStrategies\Simple.cs" />
-    <Compile Include="ShrinkingStrategy.cs" />
-    <Compile Include="ShrinkingStrategies\CompositeShrinkingStrategy.cs" />
     <Compile Include="ShrinkingStrategies\IShrinkingStrategy.cs" />
+    <Compile Include="ShrinkingStrategy.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SimplestFailCase.cs" />
     <Compile Include="ShrinkingStrategies\SimpleValuesShrinkingStrategy.cs" />
     <Compile Include="NotInTheRoot\FactInfo.cs" />

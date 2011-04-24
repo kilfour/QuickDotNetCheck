@@ -6,6 +6,7 @@ using QuickDotNetCheck.ElaborateExample.Tests.People.Helpers;
 using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
 using QuickGenerate.Writing;
+using Xunit;
 
 namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
 {
@@ -30,6 +31,15 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
         protected override void Act()
         {
             new CreatePersonHandler(DatabaseTest.NHibernateSession()).Handle(request);
+        }
+
+        [Fact]
+        public void Verify()
+        {
+            new Suite(2, 5)
+                .Using(() => new DatabaseTest())
+                .Register(() => new CreateValidPersonFixture())
+                .Run();
         }
 
         [Spec]

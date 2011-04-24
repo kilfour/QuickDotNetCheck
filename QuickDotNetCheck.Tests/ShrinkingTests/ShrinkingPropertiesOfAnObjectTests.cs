@@ -1,5 +1,3 @@
-using System;
-using QuickDotNetCheck;
 using QuickDotNetCheck.ShrinkingStrategies;
 using Xunit;
 
@@ -19,17 +17,16 @@ namespace QuickDotNetCheckTests.ShrinkingTests
                     };
 
             var composite =
-                ShrinkingStrategy
-                    .For(something)
+                new ManipulationStrategy()
                     .Add(Simple.AllValues())
-                    .RegisterAll();
+                    .RegisterAll(something);
 
             composite.Shrink(() => something.PropertyOne == 42);
 
             Assert.False(composite.Shrunk());
-            Assert.False(composite.StrategyFor(e => e.PropertyOne).Shrunk());
-            Assert.True(composite.StrategyFor(e => e.PropertyTwo).Shrunk());
-            Assert.True(composite.StrategyFor(e => e.PropertyThree).Shrunk());
+            Assert.False(composite.Shrunk(something, e => e.PropertyOne));
+            Assert.True(composite.Shrunk(something, e => e.PropertyTwo));
+            Assert.True(composite.Shrunk(something, e => e.PropertyThree));
         }
 
         [Fact]
@@ -43,17 +40,16 @@ namespace QuickDotNetCheckTests.ShrinkingTests
                         PropertyThree = 42,
                     };
             var composite =
-                ShrinkingStrategy
-                    .For(something)
+                new ManipulationStrategy()
                     .Add(Simple.AllValues())
-                    .RegisterAll();
+                    .RegisterAll(something);
 
             composite.Shrink(() => something.PropertyOne == 42 && something.PropertyTwo == 42);
 
             Assert.False(composite.Shrunk());
-            Assert.False(composite.StrategyFor(e => e.PropertyOne).Shrunk());
-            Assert.False(composite.StrategyFor(e => e.PropertyTwo).Shrunk());
-            Assert.True(composite.StrategyFor(e => e.PropertyThree).Shrunk());
+            Assert.False(composite.Shrunk(something, e => e.PropertyOne));
+            Assert.False(composite.Shrunk(something, e => e.PropertyTwo));
+            Assert.True(composite.Shrunk(something, e => e.PropertyThree));
         }
 
         [Fact]
@@ -67,18 +63,16 @@ namespace QuickDotNetCheckTests.ShrinkingTests
                     PropertyThree = 42,
                 };
             var composite =
-                ShrinkingStrategy
-                    .For(something)
-                    .Add(Get.From(something).AllValues())
+                new ManipulationStrategy()
                     .Add(Simple.AllValues())
-                    .RegisterAll();
+                    .RegisterAll(something);
 
             composite.Shrink(() => something.PropertyOne != 0 && something.PropertyTwo != 42);
 
             Assert.False(composite.Shrunk());
-            Assert.False(composite.StrategyFor(e => e.PropertyOne).Shrunk());
-            Assert.False(composite.StrategyFor(e => e.PropertyTwo).Shrunk());
-            Assert.True(composite.StrategyFor(e => e.PropertyThree).Shrunk());
+            Assert.False(composite.Shrunk(something, e => e.PropertyOne));
+            Assert.False(composite.Shrunk(something, e => e.PropertyTwo));
+            Assert.True(composite.Shrunk(something, e => e.PropertyThree));
         }
 
         public class SomethingToShrink

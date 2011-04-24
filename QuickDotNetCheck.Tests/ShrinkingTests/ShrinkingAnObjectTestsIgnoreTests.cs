@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using QuickDotNetCheck;
+using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
 using Xunit;
 
@@ -13,12 +15,12 @@ namespace QuickDotNetCheckTests.ShrinkingTests
             var something = Generate.One<SomethingToShrink>();
             something.IntProperty = 42;
             var composite =
-                ShrinkingStrategy
-                    .For(something)
-                    .Ignore(e => e.IntProperty)
-                    .RegisterAll();
+                new ManipulationStrategy()
+                    .Add(-1, 0, 1)
+                    .Ignore<SomethingToShrink, int>(e => e.IntProperty)
+                    .RegisterAll(something);
 
-            Assert.Throws<KeyNotFoundException>(() => composite.StrategyFor(e => e.IntProperty));
+            Assert.Throws<NullReferenceException>(() => composite.Shrunk(something, e => e.IntProperty));
         }
 
         public class SomethingToShrink

@@ -13,17 +13,16 @@ namespace QuickDotNetCheckTests.ShrinkingTests
             var something = Generate.One<SomethingToShrink>();
             something.IntProperty = 42;
             var composite =
-                ShrinkingStrategy
-                    .For(something)
+                new ManipulationStrategy()
                     .Add(Simple.Values<int>())
                     .Add(Simple.Values<string>())
-                    .RegisterAll();
+                    .RegisterAll(something);
 
             composite.Shrink(() => something.IntProperty == 42);
 
             Assert.False(composite.Shrunk());
-            Assert.False(composite.StrategyFor(e => e.IntProperty).Shrunk());
-            Assert.True(composite.StrategyFor(e => e.StringProperty).Shrunk());
+            Assert.False(composite.Shrunk(something, e => e.IntProperty));
+            Assert.True(composite.Shrunk(something, e => e.StringProperty));
         }
 
         public class SomethingToShrink
