@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnsureTests.cs" />
+    <Compile Include="PostconditionTest.cs" />
     <Compile Include="PreconditionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShrinkingTests\ShrinkingAListTests.cs" />

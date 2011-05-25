@@ -54,7 +54,7 @@ namespace QuickDotNetCheck
             BeforeAct();
             FilterOutSpecsWithFailingPrecondition();
             Act();
-            //FilterOutSpecsWithFailingPostcondition();
+            FilterOutSpecsWithFailingPostcondition();
         }
 
         public virtual void BeforeAct() { }
@@ -99,21 +99,9 @@ namespace QuickDotNetCheck
             factsToCheck = testMethods.Keys.Where(spec => spec.VerifyPrecondition()).ToList();
         }
 
-        //private void FilterOutSpecsWithFailingPostcondition()
-        //{
-        //    factsToCheck =
-        //        factsToCheck.Where(mi => !mi.HasAttribute<IfAfterAttribute>())
-        //            .Union(
-        //                factsToCheck
-        //                    .Where(mi => mi.HasAttribute<IfAfterAttribute>() && PostconditionIsSatisfied(mi)))
-        //            .ToList();
-        //}
-
-        //private bool PostconditionIsSatisfied(MethodInfo memberInfo)
-        //{
-        //    var type = memberInfo.GetAttribute<IfAfterAttribute>().PostconditionType;
-        //    var postcondition = (ICondition)Activator.CreateInstance(type);
-        //    return postcondition.Evaluate(this);
-        //}
+        private void FilterOutSpecsWithFailingPostcondition()
+        {
+            factsToCheck = testMethods.Keys.Where(spec => spec.VerifyPostcondition()).ToList();
+        }
     }
 }
