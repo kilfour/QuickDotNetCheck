@@ -101,7 +101,7 @@ namespace QuickDotNetCheck
 
         private void FilterOutSpecsWithFailingPostcondition()
         {
-            factsToCheck = testMethods.Keys.Where(spec => spec.VerifyPostcondition()).ToList();
+            factsToCheck = factsToCheck.Where(spec => spec.VerifyPostcondition()).ToList();
         }
     }
 }
