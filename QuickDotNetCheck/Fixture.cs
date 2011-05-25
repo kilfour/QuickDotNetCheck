@@ -10,18 +10,20 @@ namespace QuickDotNetCheck
 {
     public abstract class Fixture : IFixture
     {
-        private readonly Dictionary<MethodInfo, FactInfo> testMethods;
-        public IEnumerable<MethodInfo> factsToCheck;
+        private readonly Dictionary<Spec, FactInfo> testMethods;
+        public IEnumerable<Spec> factsToCheck;
 
         protected Fixture()
         {
-            testMethods = new Dictionary<MethodInfo, FactInfo>();
+            testMethods = new Dictionary<Spec, FactInfo>();
             var specs = GetType()
                 .GetMethods()
                 .Where(mi => mi.HasAttribute<SpecAttribute>());
             foreach (var mi in specs)
             {
-                testMethods[mi] = new FactInfo {Name = GetType().Name + "." + mi.Name};
+                var action = (Action)Delegate.CreateDelegate(typeof (Action), this, mi);
+                var spec = new Spec(GetType().Name + "." + mi.Name, action);
+                testMethods[spec] = new FactInfo { Name = GetType().Name + "." + mi.Name };
             }
         }
 
@@ -40,39 +42,40 @@ namespace QuickDotNetCheck
         public void Execute()
         {
             BeforeAct();
-            FilterOutSpecsWithFailingPrecondition();
+            factsToCheck = testMethods.Keys.ToList();
+            //FilterOutSpecsWithFailingPrecondition();
             Act();
-            FilterOutSpecsWithFailingPostcondition();
+            //FilterOutSpecsWithFailingPostcondition();
         }
 
         public virtual void BeforeAct() { }
 
         protected abstract void Act();
 
-        private void AssertSpec(MethodInfo info)
+        private void AssertSpec(Spec spec)
         {
             try
             {
-                var action = (Action)Delegate.CreateDelegate(typeof (Action), this, info);
-                action();
+               spec.Verify();
             }
             catch (FalsifiableException failure)
             {
-                failure.Spec = info;
+                failure.Spec = spec;
                 throw;
             }
             catch (Exception)
             {
-                Suite.Reporter.WriteLine(GetType().Name + " " + info.Name);
+                Suite.Reporter.WriteLine(GetType().Name + " " + spec.Name);
                 throw;
             }
         }
+
         public IEnumerable<string> Assert()
         {
-            foreach (var mi in factsToCheck)
+            foreach (var spec in factsToCheck)
             {
-                testMethods[mi].TimesExecuted++;
-                AssertSpec(mi);
+                testMethods[spec].TimesExecuted++;
+                AssertSpec(spec);
             }
 
             return
@@ -82,38 +85,38 @@ namespace QuickDotNetCheck
 
         public virtual void Shrink(Func<bool> runFunc) { }
 
-        private void FilterOutSpecsWithFailingPrecondition()
-        {
-            factsToCheck =
-                testMethods.Keys.Where(mi => !mi.HasAttribute<IfAttribute>())
-                    .Union(
-                        testMethods.Keys
-                            .Where(mi => mi.HasAttribute<IfAttribute>() && PreconditionIsSatisfied(mi)))
-                    .ToList();
-        }
+        //private void FilterOutSpecsWithFailingPrecondition()
+        //{
+        //    factsToCheck =
+        //        testMethods.Keys.Where(mi => !mi.HasAttribute<IfAttribute>())
+        //            .Union(
+        //                testMethods.Keys
+        //                    .Where(mi => mi.HasAttribute<IfAttribute>() && PreconditionIsSatisfied(mi)))
+        //            .ToList();
+        //}
 
-        private bool PreconditionIsSatisfied(MethodInfo memberInfo)
-        {
-            var type = memberInfo.GetAttribute<IfAttribute>().PreconditionType;
-            var precondition = (ICondition)Activator.CreateInstance(type);
-            return precondition.Evaluate(this);
-        }
+        //private bool PreconditionIsSatisfied(MethodInfo memberInfo)
+        //{
+        //    var type = memberInfo.GetAttribute<IfAttribute>().PreconditionType;
+        //    var precondition = (ICondition)Activator.CreateInstance(type);
+        //    return precondition.Evaluate(this);
+        //}
 
-        private void FilterOutSpecsWithFailingPostcondition()
-        {
-            factsToCheck =
-                factsToCheck.Where(mi => !mi.HasAttribute<IfAfterAttribute>())
-                    .Union(
-                        factsToCheck
-                            .Where(mi => mi.HasAttribute<IfAfterAttribute>() && PostconditionIsSatisfied(mi)))
-                    .ToList();
-        }
+        //private void FilterOutSpecsWithFailingPostcondition()
+        //{
+        //    factsToCheck =
+        //        factsToCheck.Where(mi => !mi.HasAttribute<IfAfterAttribute>())
+        //            .Union(
+        //                factsToCheck
+        //                    .Where(mi => mi.HasAttribute<IfAfterAttribute>() && PostconditionIsSatisfied(mi)))
+        //            .ToList();
+        //}
 
-        private bool PostconditionIsSatisfied(MethodInfo memberInfo)
-        {
-            var type = memberInfo.GetAttribute<IfAfterAttribute>().PostconditionType;
-            var postcondition = (ICondition)Activator.CreateInstance(type);
-            return postcondition.Evaluate(this);
-        }
+        //private bool PostconditionIsSatisfied(MethodInfo memberInfo)
+        //{
+        //    var type = memberInfo.GetAttribute<IfAfterAttribute>().PostconditionType;
+        //    var postcondition = (ICondition)Activator.CreateInstance(type);
+        //    return postcondition.Evaluate(this);
+        //}
     }
 }

@@ -188,9 +188,7 @@ namespace QuickDotNetCheck
                         fixture.Execute();
                         if (ix == actionsCopy.Count - 1)
                         {
-                            var action =
-                                (Action) Delegate.CreateDelegate(typeof (Action), fixture, previousFailure.Spec);
-                            action();
+                            previousFailure.Spec.Verify();
                         }
                     }
                 }

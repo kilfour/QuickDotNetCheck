@@ -9,7 +9,7 @@ namespace QuickDotNetCheck.Exceptions
         public FalsifiableException(string expected, string actual) 
             : base( BuildMessage( expected, actual) ) { }
 
-        public MethodInfo Spec { get; set; }
+        public Spec Spec { get; set; }
 
         private static string BuildMessage(string expected, string actual)
         {

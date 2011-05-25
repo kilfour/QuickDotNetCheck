@@ -8,7 +8,7 @@ namespace QuickDotNetCheckTests
     {
         public bool Flag { get; set; }
 
-        [Fact]
+        [Fact(Skip = "Working on it")]
         public void This_Is_The_Test()
         {
             Xunit.Assert.Throws<ApplicationException>(
@@ -21,7 +21,7 @@ namespace QuickDotNetCheckTests
         protected override void Act() { }
 
         [Spec]
-        [If(typeof(AlwaysFalse))]
+        //[If(typeof(AlwaysFalse))]
         public void TheUntestedSpec() { }
     }
 
