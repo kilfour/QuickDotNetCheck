@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using QuickDotNetCheck.Exceptions;
 using QuickDotNetCheck.Implementation;
 using QuickDotNetCheck.NotInTheRoot;
@@ -11,7 +10,7 @@ namespace QuickDotNetCheck
     public abstract class Fixture : IFixture
     {
         private readonly Dictionary<Spec, FactInfo> testMethods;
-        public IEnumerable<Spec> factsToCheck;
+        private IEnumerable<Spec> factsToCheck;
 
         protected Fixture()
         {
@@ -23,6 +22,17 @@ namespace QuickDotNetCheck
             {
                 var action = (Action)Delegate.CreateDelegate(typeof (Action), this, mi);
                 var spec = new Spec(GetType().Name + "." + mi.Name, action);
+                testMethods[spec] = new FactInfo { Name = GetType().Name + "." + mi.Name };
+            }
+
+            specs = GetType()
+                .GetMethods()
+                .Where(mi => mi.ReturnType == typeof(Spec));
+
+            foreach (var mi in specs)
+            {
+                var action = (Func<Spec>)Delegate.CreateDelegate(typeof(Func<Spec>), this, mi);
+                var spec = action();
                 testMethods[spec] = new FactInfo { Name = GetType().Name + "." + mi.Name };
             }
         }
@@ -42,8 +52,7 @@ namespace QuickDotNetCheck
         public void Execute()
         {
             BeforeAct();
-            factsToCheck = testMethods.Keys.ToList();
-            //FilterOutSpecsWithFailingPrecondition();
+            FilterOutSpecsWithFailingPrecondition();
             Act();
             //FilterOutSpecsWithFailingPostcondition();
         }
@@ -85,22 +94,10 @@ namespace QuickDotNetCheck
 
         public virtual void Shrink(Func<bool> runFunc) { }
 
-        //private void FilterOutSpecsWithFailingPrecondition()
-        //{
-        //    factsToCheck =
-        //        testMethods.Keys.Where(mi => !mi.HasAttribute<IfAttribute>())
-        //            .Union(
-        //                testMethods.Keys
-        //                    .Where(mi => mi.HasAttribute<IfAttribute>() && PreconditionIsSatisfied(mi)))
-        //            .ToList();
-        //}
-
-        //private bool PreconditionIsSatisfied(MethodInfo memberInfo)
-        //{
-        //    var type = memberInfo.GetAttribute<IfAttribute>().PreconditionType;
-        //    var precondition = (ICondition)Activator.CreateInstance(type);
-        //    return precondition.Evaluate(this);
-        //}
+        private void FilterOutSpecsWithFailingPrecondition()
+        {
+            factsToCheck = testMethods.Keys.Where(spec => spec.VerifyPrecondition()).ToList();
+        }
 
         //private void FilterOutSpecsWithFailingPostcondition()
         //{
