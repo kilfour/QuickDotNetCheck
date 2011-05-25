@@ -6,10 +6,15 @@ namespace QuickDotNetCheckTests
 {
     public class UntestedSpecsReportingTests : Fixture 
     {
-        public bool Flag { get; set; }
+        public Spec SystemUnderTest()
+        {
+            return
+                new Spec("Testingk", () => { })
+                .If(() => false);
+        }
 
-        [Fact(Skip = "Working on it")]
-        public void This_Is_The_Test()
+        [Fact]
+        public void Throws()
         {
             Xunit.Assert.Throws<ApplicationException>(
                 () =>
@@ -19,17 +24,5 @@ namespace QuickDotNetCheckTests
         }
 
         protected override void Act() { }
-
-        [Spec]
-        //[If(typeof(AlwaysFalse))]
-        public void TheUntestedSpec() { }
-    }
-
-    public class AlwaysFalse : Condition<Fixture>
-    {
-        public override bool Evaluate(Fixture fixture)
-        {
-            return false;
-        }
     }
 }

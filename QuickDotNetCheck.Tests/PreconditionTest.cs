@@ -8,8 +8,7 @@ namespace QuickDotNetCheckTests
         private bool preconditionHolds;
         private bool specWasVerified;
 
-        // This method is the SUT
-        public Spec foo()
+        public Spec SystemUnderTest()
         {
             return
                 new Spec("Testingk", () => { specWasVerified = true; })
@@ -40,7 +39,5 @@ namespace QuickDotNetCheckTests
             Assert();
             Xunit.Assert.True(specWasVerified);
         }
-
-        
     }
 }
