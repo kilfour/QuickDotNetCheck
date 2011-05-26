@@ -4,7 +4,7 @@ namespace QuickDotNetCheck
 {
     public class Spec
     {
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         private readonly Action invariant;
         
@@ -12,9 +12,8 @@ namespace QuickDotNetCheck
         
         private Func<bool> postcondition = () => true;
 
-        public Spec(string name, Action invariant)
+        public Spec(Action invariant)
         {
-            Name = name;
             this.invariant = invariant;
         }
 

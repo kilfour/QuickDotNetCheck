@@ -12,7 +12,7 @@ namespace QuickDotNetCheckTests
         public Spec SystemUnderTest()
         {
             return
-                new Spec("Testingk", () => { specWasVerified = true; })
+                new Spec(() => { specWasVerified = true; })
                     .IfAfter(() => postconditionHolds());
         }
 

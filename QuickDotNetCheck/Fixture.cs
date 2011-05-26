@@ -18,11 +18,12 @@ namespace QuickDotNetCheck
             var specs = GetType()
                 .GetMethods()
                 .Where(mi => mi.HasAttribute<SpecAttribute>());
+
             foreach (var mi in specs)
             {
                 var action = (Action)Delegate.CreateDelegate(typeof (Action), this, mi);
-                var spec = new Spec(GetType().Name + "." + mi.Name, action);
-                testMethods[spec] = new FactInfo { Name = GetType().Name + "." + mi.Name };
+                var spec = new Spec(action) { Name = GetType().Name + "." + mi.Name};
+                testMethods[spec] = new FactInfo { Name = spec.Name };
             }
 
             specs = GetType()
@@ -33,7 +34,8 @@ namespace QuickDotNetCheck
             {
                 var action = (Func<Spec>)Delegate.CreateDelegate(typeof(Func<Spec>), this, mi);
                 var spec = action();
-                testMethods[spec] = new FactInfo { Name = GetType().Name + "." + mi.Name };
+                spec.Name = GetType().Name + "." + mi.Name;
+                testMethods[spec] = new FactInfo { Name = spec.Name };
             }
         }
 

@@ -9,7 +9,7 @@ namespace QuickDotNetCheckTests
         public Spec SystemUnderTest()
         {
             return
-                new Spec("Testingk", () => { })
+                new Spec(() => { })
                 .If(() => false);
         }
 
