@@ -94,6 +94,12 @@ namespace QuickDotNetCheck
                     .Select(mi => testMethods[mi].Name);
         }
 
+        public void AssertSpec(string specName)
+        {
+            var spec = testMethods.Single(kv => kv.Key.Name == specName).Key;
+            AssertSpec(spec);
+        }
+
         public virtual void Shrink(Func<bool> runFunc) { }
 
         private void FilterOutSpecsWithFailingPrecondition()

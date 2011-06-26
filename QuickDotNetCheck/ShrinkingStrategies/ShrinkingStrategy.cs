@@ -136,7 +136,5 @@ namespace QuickDotNetCheck.ShrinkingStrategies
 
             return stream.ToReader().ReadToEnd();
         }
-
-        
     }
 }

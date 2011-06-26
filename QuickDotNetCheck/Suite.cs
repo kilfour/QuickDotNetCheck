@@ -101,9 +101,11 @@ namespace QuickDotNetCheck
                     .ToDictionary(s => s, s => 0);
 
             disposables.ForEach(d => d.Dispose());
+            int testNumber = -1;
+            int fixtureNumber = -1;
             try
             {
-                for (int testNumber = 0; testNumber < numberOfTests; testNumber++)
+                for (testNumber = 0; testNumber < numberOfTests; testNumber++)
                 {
                     executedFixtures = new List<IFixture>();
 
@@ -123,7 +125,7 @@ namespace QuickDotNetCheck
                             knownspecs[testedSpec]++;
                         }
                     }
-                    for (int ix = 0; ix < numberOfFixtures; ix++)
+                    for (fixtureNumber = 0; fixtureNumber < numberOfFixtures; fixtureNumber++)
                     {
 
                         var fixture = fixtureFuncs.Select(f => f()).Where(f => f.CanAct()).PickOne();
@@ -147,7 +149,7 @@ namespace QuickDotNetCheck
                                 knownspecs[testedSpec]++;
                             }
                             if (LastException != null)
-                                throw;
+                                throw new UnexpectedException(LastException);
                         }
                     }
                     disposables.ForEach(d => d.Dispose());
@@ -157,8 +159,8 @@ namespace QuickDotNetCheck
             {
                 disposables.ForEach(d => d.Dispose());
                 if (shrink)
-                    throw new RunReport(failure, Shrink(executedFixtures, failure));
-                throw new RunReport(failure);
+                    throw new RunReport(testNumber, fixtureNumber, failure, Shrink(executedFixtures, failure));
+                throw new RunReport(testNumber, fixtureNumber, failure, null);
             }
             var untested = knownspecs.Where(s => s.Value == 0).ToList();
             if (untested.Count() > 0)
@@ -184,40 +186,27 @@ namespace QuickDotNetCheck
                     var fixture = actionsCopy.ElementAt(ix);
                     if (fixture.CanAct())
                     {
-                        fixture.Execute();
-                        if (ix == actionsCopy.Count - 1)
+                        LastException = null;
+                        try
+                        {
+                            fixture.Execute();
+                        }
+                        catch (Exception e)
+                        {
+                            LastException = e;
+                        }
+                        
+                        if (ix == actionsCopy.Count - 1 && previousFailure.Spec != null)
                         {
                             previousFailure.Spec.Verify();
                         }
                     }
                 }
-                catch (FalsifiableException ex)
+                catch (FalsifiableException)
                 {
-                    //FIXME
-                    string exLine = 
-                        ex.StackTrace
-                        .Split(new[]{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
-                        .Single(s => s.Contains(previousFailure.Spec.Name));
-                    string previousFailureLine = 
-                        previousFailure.StackTrace
-                        .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                        .Single(s => s.Contains(previousFailure.Spec.Name));
-                    if (exLine.Equals(previousFailureLine))
-                    {
-                        disposables.ForEach(d => d.Dispose());
-                        Reporter = oldReporter;
-                        return true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (LastException != null && ex.Message == LastException.Message)
-                    {
-                        disposables.ForEach(d => d.Dispose());
-                        Reporter = oldReporter;
-                        return true;
-                    }
-                    break;
+                    disposables.ForEach(d => d.Dispose());
+                    Reporter = oldReporter;
+                    return true;
                 }
             }
             disposables.ForEach(d => d.Dispose());

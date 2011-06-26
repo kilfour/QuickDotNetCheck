@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using QuickDotNetCheck;
 using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
 using Xunit;

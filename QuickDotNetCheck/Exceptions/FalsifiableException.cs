@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Reflection;
 using System.Text;
 
 namespace QuickDotNetCheck.Exceptions
 {
     public class FalsifiableException : Exception
     {
+        public FalsifiableException(string expected, Exception exception)
+            : base(expected, exception) { }
+
         public FalsifiableException(string expected, string actual) 
             : base( BuildMessage( expected, actual) ) { }
 
@@ -19,6 +21,21 @@ namespace QuickDotNetCheck.Exceptions
             sbMessage.AppendLine();
             sbMessage.AppendFormat("Actual : {0}.", actual);
             sbMessage.AppendLine();
+            return sbMessage.ToString();
+        }
+    }
+
+    public class UnexpectedException : FalsifiableException
+    {
+        public UnexpectedException(Exception exception)
+            : base(BuildMessage(exception), exception) { }
+
+        private static string BuildMessage(Exception exception)
+        {
+            var sbMessage = new StringBuilder();
+ 
+            sbMessage.AppendLine("Act threw : ");
+            sbMessage.AppendLine(exception.ToString());
             return sbMessage.ToString();
         }
     }

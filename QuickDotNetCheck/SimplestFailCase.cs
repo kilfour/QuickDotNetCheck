@@ -9,7 +9,7 @@ namespace QuickDotNetCheck
         public List<IFixture> Fixtures;
         public SimplestFailCase(List<IFixture> fixtures)
         {
-            Fixtures = fixtures;
+            this.Fixtures = fixtures;
         }
 
         public string Report()

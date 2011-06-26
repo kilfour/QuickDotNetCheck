@@ -1,4 +1,3 @@
-using QuickDotNetCheck;
 using QuickDotNetCheck.ShrinkingStrategies;
 using QuickGenerate;
 using Xunit;
