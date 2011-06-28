@@ -159,8 +159,8 @@ namespace QuickDotNetCheck
             {
                 disposables.ForEach(d => d.Dispose());
                 if (shrink)
-                    throw new RunReport(testNumber, fixtureNumber, failure, Shrink(executedFixtures, failure));
-                throw new RunReport(testNumber, fixtureNumber, failure, null);
+                    throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure));
+                throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, null);
             }
             var untested = knownspecs.Where(s => s.Value == 0).ToList();
             if (untested.Count() > 0)
