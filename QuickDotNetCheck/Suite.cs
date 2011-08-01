@@ -196,9 +196,16 @@ namespace QuickDotNetCheck
                             LastException = e;
                         }
                         
-                        if (ix == actionsCopy.Count - 1 && previousFailure.Spec != null)
+                        if (ix == actionsCopy.Count - 1)
                         {
-                            previousFailure.Spec.Verify();
+                            if (previousFailure.Spec != null)
+                                previousFailure.Spec.Verify();
+                            else if(previousFailure.InnerException != null)
+                            {
+                                if (LastException == null)
+                                    return false;
+                                return LastException.Message == previousFailure.InnerException.Message;
+                            }
                         }
                     }
                 }

@@ -35,6 +35,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\quickgenerate\QuickGenerate.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -53,6 +57,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BroadCaster\Broadcast.cs" />
+    <Compile Include="BroadCaster\RegisteredClientFaults.cs" />
+    <Compile Include="BroadCaster\BroadcasterSuite.cs" />
+    <Compile Include="BroadCaster\RegisterClient.cs" />
+    <Compile Include="BroadCaster\SimpleModel\Broadcaster.cs" />
+    <Compile Include="BroadCaster\SimpleModel\IBroadcaster.cs" />
+    <Compile Include="BroadCaster\SimpleModel\IClientProxy.cs" />
+    <Compile Include="BroadCaster\SimpleModel\IClientProxyFactory.cs" />
+    <Compile Include="BroadCaster\SimpleModel\Notification.cs" />
+    <Compile Include="BroadCaster\StopBroadcasting.cs" />
     <Compile Include="BugHouseTest.cs" />
     <Compile Include="ListDeleteTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
