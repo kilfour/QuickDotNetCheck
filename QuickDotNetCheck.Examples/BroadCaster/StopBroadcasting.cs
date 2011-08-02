@@ -14,9 +14,9 @@ namespace QuickDotNetCheck.Examples.BroadCaster
             BroadcasterSuite.ThreadSwitch = false;
         }
 
-        //public Spec DoesNotThrow()
-        //{
-        //    return new Spec(() => Ensure.Null(Broadcast.ExceptionFromThread));
-        //}
+        public Spec DoesNotThrow()
+        {
+            return new Spec(() => Ensure.Null(Broadcast.ExceptionFromThread));
+        }
     }
 }

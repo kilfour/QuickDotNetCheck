@@ -200,11 +200,11 @@ namespace QuickDotNetCheck
                         {
                             if (previousFailure.Spec != null)
                                 previousFailure.Spec.Verify();
-                            else if(previousFailure.InnerException != null)
+                            if(previousFailure.InnerException != null)
                             {
                                 if (LastException == null)
                                     return false;
-                                return LastException.Message == previousFailure.InnerException.Message;
+                                return LastException.GetType() == previousFailure.InnerException.GetType();
                             }
                         }
                     }
