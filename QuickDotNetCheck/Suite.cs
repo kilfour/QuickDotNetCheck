@@ -112,7 +112,6 @@ namespace QuickDotNetCheck
                     objects = objectFuncs.Select(f => f()).ToList();
                     disposables = disposableFuncs.Select(f => f()).ToList();
 
-                    //execute Do Fixtures
                     foreach (var doFixture in doFixtures)
                     {
                         var fixture = doFixture();
