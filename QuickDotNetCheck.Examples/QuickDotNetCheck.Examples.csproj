@@ -68,6 +68,7 @@
     <Compile Include="BroadCaster\SimpleModel\Notification.cs" />
     <Compile Include="BroadCaster\StopBroadcasting.cs" />
     <Compile Include="BugHouseTest.cs" />
+    <Compile Include="DivisionByZeroTest.cs" />
     <Compile Include="ListDeleteTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

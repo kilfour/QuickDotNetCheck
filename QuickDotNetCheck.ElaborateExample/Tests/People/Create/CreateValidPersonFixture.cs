@@ -83,6 +83,4 @@ namespace QuickDotNetCheck.ElaborateExample.Tests.People.Create
             return stream.ToReader().ReadToEnd();
         }
     }
-
-
 }

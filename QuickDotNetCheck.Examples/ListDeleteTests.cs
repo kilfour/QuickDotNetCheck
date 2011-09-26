@@ -33,7 +33,7 @@ namespace QuickDotNetCheck.Examples
     public class PropertyBasedTesting : Fixture
     {
         private readonly ListDeleter listDeleter = new ListDeleter();
-        private readonly IntGenerator intGen = new IntGenerator(1, 50);
+        private readonly IntGenerator intGen = new IntGenerator(1, 10);
 
         private IList<int> inputList { get; set; }
         private IList<int> resultList;

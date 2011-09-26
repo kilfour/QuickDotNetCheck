@@ -103,64 +103,70 @@ namespace QuickDotNetCheck
             disposables.ForEach(d => d.Dispose());
             int testNumber = -1;
             int fixtureNumber = -1;
-            try
+            for (testNumber = 0; testNumber < numberOfTests; testNumber++)
             {
-                for (testNumber = 0; testNumber < numberOfTests; testNumber++)
+                executedFixtures = new List<IFixture>();
+
+                objects = objectFuncs.Select(f => f()).ToList();
+                disposables = disposableFuncs.Select(f => f()).ToList();
+
+                foreach (var doFixture in doFixtures)
                 {
-                    executedFixtures = new List<IFixture>();
-
-                    objects = objectFuncs.Select(f => f()).ToList();
-                    disposables = disposableFuncs.Select(f => f()).ToList();
-
-                    foreach (var doFixture in doFixtures)
+                    var fixture = doFixture();
+                    executedFixtures.Add(fixture);
+                    fixture.Arrange();
+                    fixture.Execute();
+                    var testedSpecs = fixture.Assert();
+                    foreach (var testedSpec in testedSpecs)
                     {
-                        var fixture = doFixture();
-                        executedFixtures.Add(fixture);
-                        fixture.Arrange();
-                        fixture.Execute();
+                        knownspecs[testedSpec]++;
+                    }
+                }
+                for (fixtureNumber = 0; fixtureNumber < numberOfFixtures; fixtureNumber++)
+                {
+                    var fixture = fixtureFuncs.Select(f => f()).Where(f => f.CanAct()).PickOne();
+                    executedFixtures.Add(fixture);
+                    fixture.Arrange();
+                    try
+                    {
+                        try
+                        {
+                            fixture.Execute();
+                        }
+                        catch (Exception e)
+                        {
+                            LastException = e;
+                        }
                         var testedSpecs = fixture.Assert();
                         foreach (var testedSpec in testedSpecs)
                         {
                             knownspecs[testedSpec]++;
                         }
+                        if (LastException != null)
+                            throw new UnexpectedException(LastException);
                     }
-                    for (fixtureNumber = 0; fixtureNumber < numberOfFixtures; fixtureNumber++)
+                    catch (FalsifiableException)
                     {
-
-                        var fixture = fixtureFuncs.Select(f => f()).Where(f => f.CanAct()).PickOne();
-                        executedFixtures.Add(fixture);
-                        fixture.Arrange();
                         try
                         {
-                            fixture.Execute();
-                            var testedSpecs = fixture.Assert();
-                            foreach (var testedSpec in testedSpecs)
-                            {
-                                knownspecs[testedSpec]++;
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            LastException = e;
-                            var testedSpecs = fixture.Assert();
-                            foreach (var testedSpec in testedSpecs)
-                            {
-                                knownspecs[testedSpec]++;
-                            }
                             if (LastException != null)
                                 throw new UnexpectedException(LastException);
+                            else
+                                throw;
+                        }
+                        catch (FalsifiableException failure)
+                        {
+                            disposables.ForEach(d => d.Dispose());
+                            if (shrink)
+                                throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure));
+                            throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, null);
                         }
                     }
-                    disposables.ForEach(d => d.Dispose());
                 }
-            }
-            catch (FalsifiableException failure)
-            {
                 disposables.ForEach(d => d.Dispose());
-                if (shrink)
-                    throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure));
-                throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, null);
             }
+            
+            
             var untested = knownspecs.Where(s => s.Value == 0).ToList();
             if (untested.Count() > 0)
             {

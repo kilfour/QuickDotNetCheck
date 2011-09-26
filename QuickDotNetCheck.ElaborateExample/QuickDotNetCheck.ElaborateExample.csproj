@@ -75,6 +75,8 @@
     <Compile Include="Domain\IHaveAnId.cs" />
     <Compile Include="People\Create\CreatePersonHandler.cs" />
     <Compile Include="People\Create\CreatePersonRequest.cs" />
+    <Compile Include="People\Search\SearchPersonHandler.cs" />
+    <Compile Include="People\Search\SearchPersonRequest.cs" />
     <Compile Include="People\Update\UpdatePersonHandler.cs" />
     <Compile Include="People\Update\UpdatePersonRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
