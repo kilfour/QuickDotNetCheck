@@ -27,11 +27,25 @@ namespace QuickDotNetCheck
             throw new FalsifiableException("True", "False");
         }
 
+        public static void True(bool flag, string message)
+        {
+            if (flag)
+                return;
+            throw new FalsifiableException("True", "False", message);
+        }
+
         public static void False(bool flag)
         {
             if(!flag)
                 return;
             throw new FalsifiableException("False", "True");
+        }
+
+        public static void False(bool flag, string message)
+        {
+            if (!flag)
+                return;
+            throw new FalsifiableException("False", "True", message);
         }
 
         public static void Null(object value)
@@ -41,11 +55,25 @@ namespace QuickDotNetCheck
             throw new FalsifiableException("null", value.ToString());
         }
 
+        public static void Null(object value, string message)
+        {
+            if (value == null)
+                return;
+            throw new FalsifiableException("null", value.ToString(), message);
+        }
+
         public static void NotNull(object value)
         {
             if (value != null)
                 return;
             throw new FalsifiableException("not null", "null");
+        }
+
+        public static void NotNull(object value, string message)
+        {
+            if (value != null)
+                return;
+            throw new FalsifiableException("not null", "null", message);
         }
 
         public static void Equal(object expected, object actual)

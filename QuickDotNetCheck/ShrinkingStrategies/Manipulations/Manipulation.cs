@@ -20,9 +20,12 @@ namespace QuickDotNetCheck.ShrinkingStrategies.Manipulations
         public Manipulation Add<TEntity>(
             TEntity target,
             Expression<Func<TEntity, object>> expression,
-            object newValue)
+            params object[] newValues)
         {
-            manipulations.Add(new ManipulationLeaf<TEntity>(target, expression, newValue));
+            foreach (var newValue in newValues)
+            {
+                manipulations.Add(new ManipulationLeaf<TEntity>(target, expression, newValue));
+            }
             return this;
         }
 

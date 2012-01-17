@@ -39,17 +39,22 @@ namespace QuickDotNetCheck
             }
         }
 
+        public void Run(int numberOfTimes)
+        {
+            new Suite(numberOfTimes, 1)
+                .Register(() => (IFixture)Activator.CreateInstance(GetType()))
+                .Run();
+        }
+
         public IEnumerable<string> SpecNames()
         {
             return testMethods.Values.Select(v => v.Name);
         }
 
         public virtual void Arrange() { }
-        
-        public virtual bool CanAct()
-        {
-            return true;
-        }
+        public virtual bool CanAct() { return true; }
+        public virtual void BeforeAct() { }
+        protected virtual void Act() { }
 
         public void Execute()
         {
@@ -58,10 +63,6 @@ namespace QuickDotNetCheck
             Act();
             FilterOutSpecsWithFailingPostcondition();
         }
-
-        public virtual void BeforeAct() { }
-
-        protected abstract void Act();
 
         private void AssertSpec(Spec spec)
         {

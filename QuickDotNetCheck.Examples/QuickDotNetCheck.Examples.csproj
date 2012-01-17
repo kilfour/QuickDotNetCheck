@@ -70,6 +70,8 @@
     <Compile Include="BugHouseTest.cs" />
     <Compile Include="DivisionByZeroTest.cs" />
     <Compile Include="ListDeleteTests.cs" />
+    <Compile Include="Multiple\Tests.cs" />
+    <Compile Include="Multiple\SimpleModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

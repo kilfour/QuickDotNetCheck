@@ -16,9 +16,9 @@ namespace QuickDotNetCheck.ShrinkingStrategies.Manipulations
 
         public Manipulator<TEntity> Change(
             Expression<Func<TEntity, object>> expression,
-            object newValue)
+            params object[] newValues)
         {
-            manipulation.Add(target, expression, newValue);
+            manipulation.Add(target, expression, newValues);
             return this;
         }
 

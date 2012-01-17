@@ -9,11 +9,14 @@ namespace QuickDotNetCheck.Exceptions
             : base(expected, exception) { }
 
         public FalsifiableException(string expected, string actual) 
-            : base( BuildMessage( expected, actual) ) { }
+            : base( BuildMessage( expected, actual, "") ) { }
+
+        public FalsifiableException(string expected, string actual, string message)
+            : base(BuildMessage(expected, actual, message)) { }
 
         public Spec Spec { get; set; }
 
-        private static string BuildMessage(string expected, string actual)
+        private static string BuildMessage(string expected, string actual, string message)
         {
             var sbMessage = new StringBuilder();
             sbMessage.AppendLine();
@@ -21,6 +24,11 @@ namespace QuickDotNetCheck.Exceptions
             sbMessage.AppendLine();
             sbMessage.AppendFormat("Actual : {0}.", actual);
             sbMessage.AppendLine();
+            if(message != string.Empty)
+            {
+                sbMessage.AppendFormat(message);
+                sbMessage.AppendLine();
+            }
             return sbMessage.ToString();
         }
     }

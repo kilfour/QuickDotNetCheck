@@ -151,15 +151,14 @@ namespace QuickDotNetCheck
                         {
                             if (LastException != null)
                                 throw new UnexpectedException(LastException);
-                            else
-                                throw;
+                            throw;
                         }
                         catch (FalsifiableException failure)
                         {
                             disposables.ForEach(d => d.Dispose());
                             if (shrink)
-                                throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure));
-                            throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, null);
+                                throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure), verbose);
+                            throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, null, verbose);
                         }
                     }
                 }
@@ -227,6 +226,7 @@ namespace QuickDotNetCheck
         }
 
         private List<IFixture> executedFixtures = new List<IFixture>();
+        private bool verbose;
 
         private SimplestFailCase Shrink(List<IFixture> fixtures, FalsifiableException previousFailure)
         {
@@ -280,6 +280,12 @@ namespace QuickDotNetCheck
         private void WriteSimplestFailCaseToReporter(SimplestFailCase simplestFailcase)
         {
             Reporter.WriteLine(simplestFailcase.Report());
+        }
+
+        public Suite Verbose()
+        {
+            verbose = true;
+            return this;
         }
     }
 }
