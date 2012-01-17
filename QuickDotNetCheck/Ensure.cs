@@ -3,10 +3,16 @@ using QuickDotNetCheck.Exceptions;
 
 namespace QuickDotNetCheck
 {
+    public static class Ensuring
+    {
+        public static int Count { get; set; }
+    }
+
     public static class Ensure
     {
         public static void Throws<TException>()  where TException : Exception
         {
+            Ensuring.Count++;
             if(Suite.LastException == null)
                 throw new FalsifiableException(
                     string.Format("An exception of type : {0}", typeof(TException)),
@@ -22,6 +28,7 @@ namespace QuickDotNetCheck
 
         public static void True(bool flag)
         {
+            Ensuring.Count++;
             if (flag)
                 return;
             throw new FalsifiableException("True", "False");
@@ -29,6 +36,7 @@ namespace QuickDotNetCheck
 
         public static void True(bool flag, string message)
         {
+            Ensuring.Count++;
             if (flag)
                 return;
             throw new FalsifiableException("True", "False", message);
@@ -36,6 +44,7 @@ namespace QuickDotNetCheck
 
         public static void False(bool flag)
         {
+            Ensuring.Count++;
             if(!flag)
                 return;
             throw new FalsifiableException("False", "True");
@@ -43,6 +52,7 @@ namespace QuickDotNetCheck
 
         public static void False(bool flag, string message)
         {
+            Ensuring.Count++;
             if (!flag)
                 return;
             throw new FalsifiableException("False", "True", message);
@@ -50,6 +60,7 @@ namespace QuickDotNetCheck
 
         public static void Null(object value)
         {
+            Ensuring.Count++;
             if (value == null)
                 return;
             throw new FalsifiableException("null", value.ToString());
@@ -57,6 +68,7 @@ namespace QuickDotNetCheck
 
         public static void Null(object value, string message)
         {
+            Ensuring.Count++;
             if (value == null)
                 return;
             throw new FalsifiableException("null", value.ToString(), message);
@@ -64,6 +76,7 @@ namespace QuickDotNetCheck
 
         public static void NotNull(object value)
         {
+            Ensuring.Count++;
             if (value != null)
                 return;
             throw new FalsifiableException("not null", "null");
@@ -71,6 +84,7 @@ namespace QuickDotNetCheck
 
         public static void NotNull(object value, string message)
         {
+            Ensuring.Count++;
             if (value != null)
                 return;
             throw new FalsifiableException("not null", "null", message);
@@ -78,6 +92,7 @@ namespace QuickDotNetCheck
 
         public static void Equal(object expected, object actual)
         {
+            Ensuring.Count++;
             if (expected.Equals(actual))
                 return;
             throw new FalsifiableException(expected.ToString(), actual.ToString());
@@ -85,6 +100,7 @@ namespace QuickDotNetCheck
 
         public static void NotEqual(object expected, object actual)
         {
+            Ensuring.Count++;
             if (!expected.Equals(actual))
                 return;
             throw new FalsifiableException("Not " + expected, actual.ToString());
@@ -92,11 +108,13 @@ namespace QuickDotNetCheck
 
         public static void Fail()
         {
+            Ensuring.Count++;
             throw new FalsifiableException("Success", "Failure");
         }
 
         public static void SmallerThan(int expected, int actual)
         {
+            Ensuring.Count++;
             if (actual < expected)
                 return;
             ThrowSmallerThan(expected, actual);
@@ -104,6 +122,7 @@ namespace QuickDotNetCheck
 
         public static void SmallerThan(DateTime expected, DateTime actual)
         {
+            Ensuring.Count++;
             if (actual < expected)
                 return;
             ThrowSmallerThan(expected, actual);
@@ -118,6 +137,7 @@ namespace QuickDotNetCheck
 
         public static void SmallerThanOrEqual(int expected, int actual)
         {
+            Ensuring.Count++;
             if (actual <= expected)
                 return;
             ThrowSmallerThanOrEqual(expected, actual);
@@ -125,6 +145,7 @@ namespace QuickDotNetCheck
 
         public static void SmallerThanOrEqual(DateTime expected, DateTime actual)
         {
+            Ensuring.Count++;
             if (actual <= expected)
                 return;
             ThrowSmallerThanOrEqual(expected, actual);
@@ -139,6 +160,7 @@ namespace QuickDotNetCheck
 
         public static void GreaterThan(int expected, int actual)
         {
+            Ensuring.Count++;
             if (actual > expected)
                 return;
             ThrowGreaterThan(expected, actual);
@@ -146,6 +168,7 @@ namespace QuickDotNetCheck
 
         public static void GreaterThan(DateTime expected, DateTime actual)
         {
+            Ensuring.Count++;
             if (actual > expected)
                 return;
             ThrowGreaterThan(expected, actual);
@@ -160,6 +183,7 @@ namespace QuickDotNetCheck
 
         public static void GreaterThanOrEqual(int expected, int actual)
         {
+            Ensuring.Count++;
             if (actual >= expected)
                 return;
             ThrowGreaterThanOrEqual(expected, actual);
@@ -167,6 +191,7 @@ namespace QuickDotNetCheck
 
         public static void GreaterThanOrEqual(DateTime expected, DateTime actual)
         {
+            Ensuring.Count++;
             if (actual >= expected)
                 return;
             ThrowGreaterThanOrEqual(expected, actual);

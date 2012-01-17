@@ -9,10 +9,9 @@ namespace QuickDotNetCheck.NotInTheRoot
 
         void Arrange();
         void Execute(); // Act is used in derived fixtures, execute decorates this a little
-        IEnumerable<string> Assert();
+        IDictionary<string, int> Assert();
 
         void Shrink(Func<bool> runFunc);
         IEnumerable<string> SpecNames();
-        void AssertSpec(string name);
     }
 }

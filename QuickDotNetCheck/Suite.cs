@@ -119,7 +119,7 @@ namespace QuickDotNetCheck
                     var testedSpecs = fixture.Assert();
                     foreach (var testedSpec in testedSpecs)
                     {
-                        knownspecs[testedSpec]++;
+                        knownspecs[testedSpec.Key] += testedSpec.Value;
                     }
                 }
                 for (fixtureNumber = 0; fixtureNumber < numberOfFixtures; fixtureNumber++)
@@ -140,7 +140,7 @@ namespace QuickDotNetCheck
                         var testedSpecs = fixture.Assert();
                         foreach (var testedSpec in testedSpecs)
                         {
-                            knownspecs[testedSpec]++;
+                            knownspecs[testedSpec.Key] += testedSpec.Value;
                         }
                         if (LastException != null)
                             throw new UnexpectedException(LastException);
@@ -164,7 +164,6 @@ namespace QuickDotNetCheck
                 }
                 disposables.ForEach(d => d.Dispose());
             }
-            
             
             var untested = knownspecs.Where(s => s.Value == 0).ToList();
             if (untested.Count() > 0)

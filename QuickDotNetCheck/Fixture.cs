@@ -64,11 +64,11 @@ namespace QuickDotNetCheck
             FilterOutSpecsWithFailingPostcondition();
         }
 
-        private void AssertSpec(Spec spec)
+        private int AssertSpec(Spec spec)
         {
             try
             {
-               spec.Verify();
+               return spec.Verify();
             }
             catch (FalsifiableException failure)
             {
@@ -82,17 +82,16 @@ namespace QuickDotNetCheck
             }
         }
 
-        public IEnumerable<string> Assert()
+        public IDictionary<string, int> Assert()
         {
+            var result = new Dictionary<string, int>();
             foreach (var spec in factsToCheck)
             {
+                result.Add(spec.Name, spec.Verify());
                 testMethods[spec].TimesExecuted++;
-                AssertSpec(spec);
             }
 
-            return
-                factsToCheck
-                    .Select(mi => testMethods[mi].Name);
+            return result;
         }
 
         public void AssertSpec(string specName)

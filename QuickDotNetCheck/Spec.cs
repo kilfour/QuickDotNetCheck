@@ -17,9 +17,11 @@ namespace QuickDotNetCheck
             this.invariant = invariant;
         }
 
-        public virtual void Verify()
+        public virtual int Verify()
         {
+            Ensuring.Count = 0;
             invariant();
+            return Ensuring.Count;
         }
 
         public Spec If(Func<bool> condition)
