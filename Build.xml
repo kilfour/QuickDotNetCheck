@@ -2,17 +2,12 @@
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
   <UsingTask AssemblyFile="Libs\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject"/>
   <UsingTask AssemblyFile="Libs\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
-  <UsingTask AssemblyFile="Libs\QuickDoc\QuickDoc.MSBuild.dll" TaskName="QuickDoc.MSBuild.DocTask"/>
   <Target Name="Build">
     <MSBuild Projects="QuickDotNetCheck.sln" Properties="Configuration=Debug"/>
     <xunit
       Assembly="QuickDotNetCheck.Tests/bin/Debug/QuickDotNetCheckTests.dll"
       TeamCity="true"
       xml="out.xml" />
-    <DocTask 
-    	AssemblyPath="QuickDotNetCheck.Tests/bin/Debug/QuickDotNetCheckTests.dll"
-    	OutputFile="QuickDoc.html"
-    	HtmlOutput="true"/>
   </Target>
   <Target Name="Release">
     <MSBuild Projects="QuickDotNetCheck.sln" Properties="Configuration=Release"/>
