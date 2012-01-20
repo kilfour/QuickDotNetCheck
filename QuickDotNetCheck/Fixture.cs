@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuickDotNetCheck.Exceptions;
 using QuickDotNetCheck.Implementation;
 using QuickDotNetCheck.NotInTheRoot;
 
@@ -87,5 +86,11 @@ namespace QuickDotNetCheck
         {
             factsToCheck = factsToCheck.Where(spec => spec.VerifyPostcondition()).ToList();
         }
+    }
+
+    public interface IUse { }
+    public interface IUse<T> : IUse
+    {
+        void Set(T state);
     }
 }

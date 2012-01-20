@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using QuickDotNetCheck.Exceptions;
 using QuickDotNetCheck.NotInTheRoot;
@@ -46,6 +47,15 @@ namespace QuickDotNetCheck
             return this;
         }
 
+        public Suite Do(params Func<IFixture>[] fixtureFuncs)
+        {
+            foreach (var fixtureFunc in fixtureFuncs)
+            {
+                doFixtures.Add(fixtureFunc);    
+            }
+            return this;
+        }
+
         public Suite Register<TFixture>()
             where TFixture : IFixture
         {
@@ -74,20 +84,24 @@ namespace QuickDotNetCheck
 
         private List<IDisposable> disposables;
         private readonly List<Func<IDisposable>> disposableFuncs = new List<Func<IDisposable>>();
-        public Suite Using(Func<IDisposable> fixture)
+        public Suite Using(Func<IDisposable> disposable)
         {
-            disposableFuncs.Add(fixture);
+            disposableFuncs.Add(disposable);
             return this;
         }
 
         public T Get<T>()
         {
-            var found = objects.SingleOrDefault(o => o.GetType() == typeof (T));
-            if(found != null)
-                return (T)found;
-            return (T)disposables.Single(o => o.GetType() == typeof (T));
+            return (T)Get(typeof (T));
         }
 
+        private object Get(Type type)
+        {
+            var found = objects.SingleOrDefault(o => o.GetType() == type);
+            if (found != null)
+                return found;
+            return disposables.Single(o => o.GetType() == type);
+        }
 
         public void Run()
         {
@@ -113,6 +127,7 @@ namespace QuickDotNetCheck
                 foreach (var doFixture in doFixtures)
                 {
                     var fixture = doFixture();
+                    SetUsedState(fixture); 
                     executedFixtures.Add(fixture);
                     fixture.Arrange();
                     fixture.Execute();
@@ -125,6 +140,7 @@ namespace QuickDotNetCheck
                 for (fixtureNumber = 0; fixtureNumber < numberOfFixtures; fixtureNumber++)
                 {
                     var fixture = fixtureFuncs.Select(f => f()).Where(f => f.CanAct()).PickOne();
+                    SetUsedState(fixture);
                     executedFixtures.Add(fixture);
                     fixture.Arrange();
                     try
@@ -175,6 +191,23 @@ namespace QuickDotNetCheck
             }
         }
 
+        private void SetUsedState(IFixture fixture)
+        {
+            var interfaces = 
+                fixture
+                    .GetType()
+                    .GetInterfaces()
+                    .Where(t => typeof (IUse).IsAssignableFrom(t) && t != typeof(IUse));
+            foreach (var @interface in interfaces)
+            {
+                var genericType = @interface.GetGenericArguments()[0];
+                var mi = fixture.GetType().GetMethod("Set", new[]{genericType});
+                mi.Invoke(fixture, new[] {Get(genericType)});
+            }
+        }
+
+        
+
         private bool Fails(IEnumerable<IFixture> actions, FalsifiableException previousFailure)
         {
             var actionsCopy = actions.ToList();
@@ -187,6 +220,7 @@ namespace QuickDotNetCheck
                 try
                 {
                     var fixture = actionsCopy.ElementAt(ix);
+                    SetUsedState(fixture);
                     if (fixture.CanAct())
                     {
                         LastException = null;

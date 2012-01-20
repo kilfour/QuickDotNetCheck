@@ -23,7 +23,7 @@ namespace QuickDotNetCheck.Examples
         [Fact]
         public void VerifyAll()
         {
-            var suite = new Suite(50, 20);
+            var suite = new Suite(50, 20).Verbose();
             suite
                 .Using(() => new BugHouseFixtureState())
                 .Register(() => new BugHouseFixture(suite))

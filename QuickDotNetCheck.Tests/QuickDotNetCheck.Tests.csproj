@@ -62,6 +62,7 @@
     <Compile Include="ShrinkingTests\ShrinkingAnObjectTestsRemovingBookkeepingAllValuesTests.cs" />
     <Compile Include="ShrinkingTests\ShrinkingAnObjectTestsRemovingBookkeepingRegisterAllTests.cs" />
     <Compile Include="ShrinkingTests\ShrinkingPropertiesOfAnObjectTests.cs" />
+    <Compile Include="SuiteTests\RunningFixtures\DoFixturesTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesWithDoTests.cs" />
     <Compile Include="UntestedSpecsReportingTests.cs" />
