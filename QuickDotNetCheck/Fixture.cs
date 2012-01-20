@@ -64,24 +64,6 @@ namespace QuickDotNetCheck
             FilterOutSpecsWithFailingPostcondition();
         }
 
-        private int AssertSpec(Spec spec)
-        {
-            try
-            {
-               return spec.Verify();
-            }
-            catch (FalsifiableException failure)
-            {
-                failure.Spec = spec;
-                throw;
-            }
-            catch (Exception)
-            {
-                Suite.Reporter.WriteLine(GetType().Name + " " + spec.Name);
-                throw;
-            }
-        }
-
         public IDictionary<string, int> Assert()
         {
             var result = new Dictionary<string, int>();
@@ -92,12 +74,6 @@ namespace QuickDotNetCheck
             }
 
             return result;
-        }
-
-        public void AssertSpec(string specName)
-        {
-            var spec = testMethods.Single(kv => kv.Key.Name == specName).Key;
-            AssertSpec(spec);
         }
 
         public virtual void Shrink(Func<bool> runFunc) { }
@@ -111,5 +87,10 @@ namespace QuickDotNetCheck
         {
             factsToCheck = factsToCheck.Where(spec => spec.VerifyPostcondition()).ToList();
         }
+    }
+
+    public class Fixture<TState> : Fixture
+    {
+        public TState state { get; set; }
     }
 }
