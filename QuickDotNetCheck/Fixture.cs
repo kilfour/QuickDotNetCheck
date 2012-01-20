@@ -88,9 +88,4 @@ namespace QuickDotNetCheck
             factsToCheck = factsToCheck.Where(spec => spec.VerifyPostcondition()).ToList();
         }
     }
-
-    public class Fixture<TState> : Fixture
-    {
-        public TState state { get; set; }
-    }
 }
