@@ -26,11 +26,10 @@ namespace QuickDotNetCheck
                 sb.AppendLine();
             }
             if (failure.Spec != null)
-                sb.Append("Spec '" + failure.Spec.Name + "' does not hold.");
+                sb.AppendLine("Spec '" + failure.Spec.Name + "' does not hold.");
             {
                 if (verbose && simplestFailCase != null)
                 {
-                    sb.AppendLine();
                     sb.Append(simplestFailCase.Report());
                 }
             }

@@ -112,6 +112,11 @@ namespace QuickDotNetCheck
             throw new FalsifiableException("Success", "Failure");
         }
 
+        public static void Holds()
+        {
+            Ensuring.Count++;
+        }
+
         public static void SmallerThan(int expected, int actual)
         {
             Ensuring.Count++;

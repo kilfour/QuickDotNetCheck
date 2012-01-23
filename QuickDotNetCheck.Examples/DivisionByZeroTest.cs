@@ -12,10 +12,11 @@ namespace QuickDotNetCheck.Examples
         [Fact]
         public void Go()
         {
-            var suite = new Suite(100, 10);
-            suite.Using(() => new Sut());
-            suite.Register(() => new MyFixture(suite));
-            suite.Run();
+            new Suite(100, 10)
+                .Verbose()
+                .Using(() => new Sut())
+                .Register<MyFixture>()
+                .Run();
         }
 
         public class Sut
@@ -26,17 +27,14 @@ namespace QuickDotNetCheck.Examples
             }
         }
 
-        public class MyFixture : Fixture
+        public class MyFixture : Fixture, IUse<Sut>
         {
             private int a { get; set; }
             private int b { get; set; }
             private int output;
-            private readonly Suite suite;
-
-            public MyFixture(Suite suite)
-            {
-                this.suite = suite;
-            }
+            private ShrinkingStrategy shrinkA;
+            private ShrinkingStrategy shrinkB;
+            private Sut sut;
 
             public override void Arrange()
             {
@@ -46,7 +44,12 @@ namespace QuickDotNetCheck.Examples
 
             protected override void Act()
             {
-                output = suite.Get<Sut>().Run(a, b);
+                output = sut.Run(a, b);
+            }
+
+            public void Set(Sut state)
+            {
+                sut = state;
             }
 
             public override string ToString()
@@ -60,9 +63,6 @@ namespace QuickDotNetCheck.Examples
                 sb.Append(".");
                 return sb.ToString();
             }
-
-            private ShrinkingStrategy shrinkA;
-            private ShrinkingStrategy shrinkB;
 
             public override void Shrink(Func<bool> runFunc)
             {

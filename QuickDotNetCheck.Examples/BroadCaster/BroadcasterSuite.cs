@@ -26,10 +26,11 @@ namespace QuickDotNetCheck.Examples.BroadCaster
         public void Verify()
         {
             new Suite(1, 40)
-                .Register(() => new RegisterClient())
-                .Register(() => new RegisteredClientFaults())
-                .Register(() => new Broadcast())
-                .Register(() => new StopBroadcasting())
+                .Verbose()
+                .Register<RegisterClient>()
+                .Register<RegisteredClientFaults>()
+                .Register<Broadcast>()
+                .Register<StopBroadcasting>()
                 .Run();
         }
 

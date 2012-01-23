@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using QuickGenerate;
 using Xunit;
 
 namespace QuickDotNetCheck.Examples.Multiple
@@ -7,47 +10,97 @@ namespace QuickDotNetCheck.Examples.Multiple
         [Fact]
         public void VerifyAll()
         {
-            var suite = new Suite(50, 20);
-            suite
+            new Suite(50, 20)
+                .Verbose()
                 .Using(() => new Project())
-                .Register(() => new AddBudget(suite))
-                .Register(() => new AddPayement(suite))
+                .Register<AddSubProject>()
+                .Register<AddBudget>()
+                .Register<AddPayement>()
                 .Run();
         }
     }
 
-    public class AddBudget : Fixture
+    public class AddBudget : Fixture, IUse<Project>
     {
-        private readonly Suite suite;
+        private Project project;
 
-        public AddBudget(Suite suite)
+        public void Set(Project state)
         {
-            this.suite = suite;
+            project = state;
         }
 
         public override bool CanAct()
         {
-            return suite.Get<Project>().Budget == null;
+            return project.Budget == null;
         }
 
         protected override void Act()
         {
-            suite.Get<Project>().Budget = new Budget();
+            project.Budget = new Budget();
         }
     }
 
-    public class AddPayement : Fixture
+    public class AddSubProject : Fixture, IUse<Project>
     {
-        private readonly Suite suite;
-
-        public AddPayement(Suite suite)
+        private SubProject subProject;
+        private Project project;
+        public void Set(Project state)
         {
-            this.suite = suite;
+            project = state;
+        }
+        
+        protected override void Act()
+        {
+            subProject = new SubProject();
+            project.Add(subProject);
+        }
+
+        [Spec]
+        public void ProjectHasThisSubProject()
+        {
+            Ensure.True(project.SubProjects.Any(sp => sp == subProject));
+        }
+
+        [Spec]
+        public void SubProjectHasTheProject()
+        {
+            Ensure.Equal(project, subProject.Project);
+        }
+    }
+
+    public class AddPayement : Fixture, IUse<Project>
+    {
+        private Project project;
+        private SubProject subProject;
+
+        public void Set(Project state)
+        {
+            project = state;
+        }
+        
+        public override bool CanAct()
+        {
+            return project.SubProjects.Count() > 0;
         }
 
         protected override void Act()
         {
-            suite.Get<Project>().Add(new Payement());
+            subProject = project.SubProjects.PickOne();
+            subProject.Add(new Payement());
+        }
+
+        public Spec ThrowsIfNoBudget()
+        {
+            return
+                new Spec(Ensure.Throws<ApplicationException>)
+                    .If(() => project.Budget == null);
+        }
+
+        public Spec DoesNotThrowsIfBudget()
+        {
+            return
+                new Spec(Ensure.Holds)
+                    .If(() => project.Budget != null);
         }
     }
 }

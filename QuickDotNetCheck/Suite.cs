@@ -139,8 +139,7 @@ namespace QuickDotNetCheck
                 }
                 for (fixtureNumber = 0; fixtureNumber < numberOfFixtures; fixtureNumber++)
                 {
-                    var fixture = fixtureFuncs.Select(f => f()).Where(f => f.CanAct()).PickOne();
-                    SetUsedState(fixture);
+                    var fixture = fixtureFuncs.Select(f => SetUsedState(f())).Where(f => f.CanAct()).PickOne();
                     executedFixtures.Add(fixture);
                     fixture.Arrange();
                     try
@@ -191,7 +190,7 @@ namespace QuickDotNetCheck
             }
         }
 
-        private void SetUsedState(IFixture fixture)
+        private IFixture SetUsedState(IFixture fixture)
         {
             var interfaces = 
                 fixture
@@ -204,6 +203,7 @@ namespace QuickDotNetCheck
                 var mi = fixture.GetType().GetMethod("Set", new[]{genericType});
                 mi.Invoke(fixture, new[] {Get(genericType)});
             }
+            return fixture;
         }
 
         
