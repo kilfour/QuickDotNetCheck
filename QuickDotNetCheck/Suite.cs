@@ -1,106 +1,120 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using QuickDotNetCheck.Exceptions;
 using QuickDotNetCheck.NotInTheRoot;
-using QuickDotNetCheck.Reporting;
 using QuickGenerate;
 
 namespace QuickDotNetCheck
 {
+    public class Sequence
+    {
+        public int NumberToRun { get; set; }
+        public List<Func<IFixture>> FixtureFuncs { get; set; }
+
+        public Sequence()
+        {
+            FixtureFuncs = new List<Func<IFixture>>();
+        }
+
+        public Sequence Register<TFixture>()
+            where TFixture : IFixture
+        {
+            FixtureFuncs.Add(() => (TFixture)Activator.CreateInstance(typeof(TFixture)));
+            return this;
+        }
+
+        public Sequence Register(params Func<IFixture>[] funcs)
+        {
+            foreach (var fixtureFunc in funcs)
+            {
+                FixtureFuncs.Add(fixtureFunc);
+            }
+            return this;
+        }
+    }
+
     public class Suite
     {
         public static Exception LastException { get; set; }
 
-        public static IReporter Reporter = new ConsoleReporter();
         private readonly int numberOfTests;
-        private readonly int numberOfFixtures;
 
-        private bool shrink = true;
+        //private readonly List<Func<IFixture>> doFixtures = new List<Func<IFixture>>();
+        //private readonly List<Func<IFixture>> fixtureFuncs = new List<Func<IFixture>>();
+        private readonly List<Sequence> sequences = new List<Sequence>();
 
-        private readonly List<Func<IFixture>> doFixtures = new List<Func<IFixture>>();
-        private readonly List<Func<IFixture>> fixtureFuncs = new List<Func<IFixture>>();
+        private List<IFixture> executedFixtures = new List<IFixture>();
 
-        public Suite(int numberOfTests, int numberOfFixtures)
+        private List<object> objects;
+        private readonly List<Func<object>> objectFuncs = new List<Func<object>>();
+        private List<IDisposable> disposables;
+        private readonly List<Func<IDisposable>> disposableFuncs = new List<Func<IDisposable>>();
+
+        public Suite() : this(1){ }
+        public Suite(int numberOfTests) 
         {
             this.numberOfTests = numberOfTests;
-            this.numberOfFixtures = numberOfFixtures;
-        }
-
-        public Suite DontShrink()
-        {
-            shrink = false;
-            return this;
         }
 
         public Suite Do<TFixture>() where TFixture : IFixture
         {
-            doFixtures.Add(() => (TFixture)Activator.CreateInstance(typeof(TFixture)));
+            Do(()=> (TFixture)Activator.CreateInstance(typeof(TFixture)));
             return this;
         }
 
         public Suite Do(Func<IFixture> fixtureFunc)
         {
-            doFixtures.Add(fixtureFunc);
+            Register(1, fixtureFunc);
             return this;
         }
 
-        public Suite Do(params Func<IFixture>[] fixtureFuncs)
+        public Suite Do(params Func<IFixture>[] funcs)
         {
-            foreach (var fixtureFunc in fixtureFuncs)
+            foreach (var fixtureFunc in funcs)
             {
-                doFixtures.Add(fixtureFunc);    
+                Do(fixtureFunc);    
             }
             return this;
         }
 
-        public Suite Register<TFixture>()
-            where TFixture : IFixture
+        public Suite Do(int numberToRun, params Func<Sequence, Sequence>[] registrationFuncs)
         {
-            fixtureFuncs.Add(() => (TFixture)Activator.CreateInstance(typeof(TFixture)));
+            var sequence =
+                new Sequence
+                {
+                    NumberToRun = numberToRun,
+                };
+            foreach (var registrationFunc in registrationFuncs)
+            {
+                registrationFunc(sequence);    
+            }
+            sequences.Add(sequence);
             return this;
         }
 
-        public Suite Register(Func<IFixture> fixtureFunc)
+        private void Register(int numberToRun, params Func<IFixture>[] funcs)
         {
-            fixtureFuncs.Add(fixtureFunc);
-            return this;
+            var sequence =
+                new Sequence
+                {
+                    NumberToRun = numberToRun,
+                    FixtureFuncs = funcs.ToList(),
+                };
+            sequences.Add(sequence);
         }
 
-        public TFixture GetLast<TFixture>()
-        {
-            return (TFixture) executedFixtures.Last(f => f.GetType() == typeof (TFixture));
-        }
-
-        private List<object> objects;
-        private readonly List<Func<object>> objectFuncs = new List<Func<object>>();
         public Suite Using(Func<object> fixture)
         {
             objectFuncs.Add(fixture);
             return this;
         }
 
-        private List<IDisposable> disposables;
-        private readonly List<Func<IDisposable>> disposableFuncs = new List<Func<IDisposable>>();
         public Suite Using(Func<IDisposable> disposable)
         {
             disposableFuncs.Add(disposable);
             return this;
-        }
-
-        public T Get<T>()
-        {
-            return (T)Get(typeof (T));
-        }
-
-        private object Get(Type type)
-        {
-            var found = objects.SingleOrDefault(o => o.GetType() == type);
-            if (found != null)
-                return found;
-            return disposables.Single(o => o.GetType() == type);
         }
 
         public void Run()
@@ -109,74 +123,17 @@ namespace QuickDotNetCheck
             disposables = disposableFuncs.Select(f => f()).ToList();
 
             var knownspecs =
-                fixtureFuncs
-                    .SelectMany(f => f().SpecNames())
-                    .Union(doFixtures.SelectMany(f => f().SpecNames()))
+                sequences.SelectMany(s => s.FixtureFuncs.SelectMany(f => f().SpecNames()))
+                    .Distinct()
                     .ToDictionary(s => s, s => 0);
 
             disposables.ForEach(d => d.Dispose());
-            int testNumber = -1;
-            int fixtureNumber = -1;
-            for (testNumber = 0; testNumber < numberOfTests; testNumber++)
+            for (var testNumber = 0; testNumber < numberOfTests; testNumber++)
             {
                 executedFixtures = new List<IFixture>();
-
                 objects = objectFuncs.Select(f => f()).ToList();
                 disposables = disposableFuncs.Select(f => f()).ToList();
-
-                foreach (var doFixture in doFixtures)
-                {
-                    var fixture = doFixture();
-                    SetUsedState(fixture); 
-                    executedFixtures.Add(fixture);
-                    fixture.Arrange();
-                    fixture.Execute();
-                    var testedSpecs = fixture.Assert();
-                    foreach (var testedSpec in testedSpecs)
-                    {
-                        knownspecs[testedSpec.Key] += testedSpec.Value;
-                    }
-                }
-                for (fixtureNumber = 0; fixtureNumber < numberOfFixtures; fixtureNumber++)
-                {
-                    var fixture = fixtureFuncs.Select(f => SetUsedState(f())).Where(f => f.CanAct()).PickOne();
-                    executedFixtures.Add(fixture);
-                    fixture.Arrange();
-                    try
-                    {
-                        try
-                        {
-                            fixture.Execute();
-                        }
-                        catch (Exception e)
-                        {
-                            LastException = e;
-                        }
-                        var testedSpecs = fixture.Assert();
-                        foreach (var testedSpec in testedSpecs)
-                        {
-                            knownspecs[testedSpec.Key] += testedSpec.Value;
-                        }
-                        if (LastException != null)
-                            throw new UnexpectedException(LastException);
-                    }
-                    catch (FalsifiableException)
-                    {
-                        try
-                        {
-                            if (LastException != null)
-                                throw new UnexpectedException(LastException);
-                            throw;
-                        }
-                        catch (FalsifiableException failure)
-                        {
-                            disposables.ForEach(d => d.Dispose());
-                            if (shrink)
-                                throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure), verbose);
-                            throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, null, verbose);
-                        }
-                    }
-                }
+                RunSequences(knownspecs, testNumber);
                 disposables.ForEach(d => d.Dispose());
             }
             
@@ -188,6 +145,66 @@ namespace QuickDotNetCheck
                 untested.ForEach(s => sb.AppendLine(s.Key));
                 throw new ApplicationException(sb.ToString());
             }
+        }
+
+        private void ExecuteFixture(int fixtureNumber, int testNumber, Dictionary<string, int> knownspecs, IFixture fixture)
+        {
+            try
+            {
+                try
+                {
+                    fixture.Execute();
+                }
+                catch (Exception e)
+                {
+                    LastException = e;
+                }
+                var testedSpecs = fixture.Assert();
+                foreach (var testedSpec in testedSpecs)
+                {
+                    knownspecs[testedSpec.Key] += testedSpec.Value;
+                }
+                if (LastException != null)
+                    throw new UnexpectedException(LastException);
+            }
+            catch (FalsifiableException)
+            {
+                try
+                {
+                    if (LastException != null)
+                        throw new UnexpectedException(LastException);
+                    throw;
+                }
+                catch (FalsifiableException failure)
+                {
+                    disposables.ForEach(d => d.Dispose());
+                    throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure));
+                }
+            }
+        }
+
+        private void RunSequences(Dictionary<string, int> knownspecs, int testNumber)
+        {
+            var fixtureNumber = 0;
+            foreach (var sequence in sequences)
+            {
+                for (int toRun = 0; toRun < sequence.NumberToRun; toRun++)
+                {
+                    var fixture = sequence.FixtureFuncs.Select(f => SetUsedState(f())).Where(f => f.CanAct()).PickOne();
+                    executedFixtures.Add(fixture);
+                    fixture.Arrange();
+                    ExecuteFixture(fixtureNumber, testNumber, knownspecs, fixture);
+                    fixtureNumber++;
+                }
+            }
+        }
+
+        private object Get(Type type)
+        {
+            var found = objects.SingleOrDefault(o => o.GetType() == type);
+            if (found != null)
+                return found;
+            return disposables.Single(o => o.GetType() == type);
         }
 
         private IFixture SetUsedState(IFixture fixture)
@@ -206,13 +223,9 @@ namespace QuickDotNetCheck
             return fixture;
         }
 
-        
-
         private bool Fails(IEnumerable<IFixture> actions, FalsifiableException previousFailure)
         {
             var actionsCopy = actions.ToList();
-            var oldReporter = Reporter;
-            Reporter = new NullReporter();
             objects = objectFuncs.Select(f => f()).ToList();
             disposables = disposableFuncs.Select(f => f()).ToList();
             for (int ix = 0; ix < actionsCopy.Count(); ix++)
@@ -249,35 +262,18 @@ namespace QuickDotNetCheck
                 catch (FalsifiableException)
                 {
                     disposables.ForEach(d => d.Dispose());
-                    Reporter = oldReporter;
                     return true;
                 }
             }
             disposables.ForEach(d => d.Dispose());
-            Reporter = oldReporter;
             return false;
         }
 
-        private List<IFixture> executedFixtures = new List<IFixture>();
-        private bool verbose;
-
         private SimplestFailCase Shrink(List<IFixture> fixtures, FalsifiableException previousFailure)
         {
-            try
-            {
-                var simplestFailcase = ShrinkTransitionsList(fixtures, previousFailure);
-                ShrinkFixtures(simplestFailcase, previousFailure);
-                WriteSimplestFailCaseToReporter(simplestFailcase);
-                return simplestFailcase;
-            }
-            catch (Exception e)
-            {
-                Reporter.WriteLine("----------------------------------------------------------");
-                Reporter.WriteLine("Unexpected exception in QuickNet during Shrinking : ");
-                Reporter.WriteLine(e.ToString());
-                Reporter.WriteLine("----------------------------------------------------------");
-                throw;
-            }
+            var simplestFailcase = ShrinkTransitionsList(fixtures, previousFailure);
+            ShrinkFixtures(simplestFailcase, previousFailure);
+            return simplestFailcase;
         }
 
         private void ShrinkFixtures(SimplestFailCase simplestFailcase, FalsifiableException previousFailure)
@@ -292,8 +288,7 @@ namespace QuickDotNetCheck
         private SimplestFailCase ShrinkTransitionsList(List<IFixture> fixtures, FalsifiableException previousFailure)
         {
             var simplestFailCase = new SimplestFailCase(fixtures);
-
-            int ix = 0;
+            var ix = 0;
             while (ix < simplestFailCase.Fixtures.Count - 1)
             {
                 var lessActions = new List<IFixture>(simplestFailCase.Fixtures);
@@ -308,17 +303,6 @@ namespace QuickDotNetCheck
                 }
             }
             return simplestFailCase;
-        }
-
-        private void WriteSimplestFailCaseToReporter(SimplestFailCase simplestFailcase)
-        {
-            Reporter.WriteLine(simplestFailcase.Report());
-        }
-
-        public Suite Verbose()
-        {
-            verbose = true;
-            return this;
         }
     }
 }

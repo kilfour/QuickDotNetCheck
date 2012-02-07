@@ -59,8 +59,8 @@ namespace QuickDotNetCheck.Examples
         [Fact]
         public void VerifyAll()
         {
-            new Suite(100, 20)
-                .Register(() => new PropertyBasedTesting())
+            new Suite(100)
+                .Do(20, opt => opt.Register(() => new PropertyBasedTesting()))
                 .Run();
         }
 

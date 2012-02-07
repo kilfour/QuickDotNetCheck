@@ -10,12 +10,12 @@ namespace QuickDotNetCheck.Examples.Multiple
         [Fact]
         public void VerifyAll()
         {
-            new Suite(50, 20)
-                .Verbose()
+            new Suite(50)
                 .Using(() => new Project())
-                .Register<AddSubProject>()
-                .Register<AddBudget>()
-                .Register<AddPayement>()
+                .Do(100, opt => opt
+                                    .Register<AddSubProject>()
+                                    .Register<AddBudget>()
+                                    .Register<AddPayement>())
                 .Run();
         }
     }
@@ -96,7 +96,7 @@ namespace QuickDotNetCheck.Examples.Multiple
                     .If(() => project.Budget == null);
         }
 
-        public Spec DoesNotThrowsIfBudget()
+        public Spec DoesNotThrowIfBudget()
         {
             return
                 new Spec(Ensure.Holds)

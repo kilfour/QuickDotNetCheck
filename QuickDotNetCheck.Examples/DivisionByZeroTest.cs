@@ -12,10 +12,9 @@ namespace QuickDotNetCheck.Examples
         [Fact]
         public void Go()
         {
-            new Suite(100, 10)
-                .Verbose()
+            new Suite(100)
                 .Using(() => new Sut())
-                .Register<MyFixture>()
+                .Do(10, opt => opt.Register<MyFixture>())
                 .Run();
         }
 

@@ -98,6 +98,14 @@ namespace QuickDotNetCheck
             throw new FalsifiableException(expected.ToString(), actual.ToString());
         }
 
+        public static void Equal(object expected, object actual, string message)
+        {
+            Ensuring.Count++;
+            if (expected.Equals(actual))
+                return;
+            throw new FalsifiableException(expected.ToString(), actual.ToString(), message);
+        }
+
         public static void NotEqual(object expected, object actual)
         {
             Ensuring.Count++;

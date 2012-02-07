@@ -10,7 +10,7 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void Simple()
         {
             var spy = new FixtureSpy();
-            new Suite(1, 0)
+            new Suite()
                 .Using(() => spy)
                 .Do(() => new TestObjectFixture { Id = 1 })
                 .Do(() => new TestObjectFixture { Id = 2 })
@@ -28,7 +28,7 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void Params()
         {
             var spy = new FixtureSpy();
-            new Suite(1, 0)
+            new Suite()
                 .Using(() => spy)
                 .Do(() => new TestObjectFixture { Id = 1 }, 
                     () => new TestObjectFixture { Id = 2 },
@@ -46,7 +46,7 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void ParamsTwice()
         {
             var spy = new FixtureSpy();
-            new Suite(2, 0)
+            new Suite(2)
                 .Using(() => spy)
                 .Do(() => new TestObjectFixture { Id = 1 },
                     () => new TestObjectFixture { Id = 2 },
@@ -67,12 +67,12 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void Complex()
         {
             var spy = new FixtureSpy();
-            new Suite(2, 1)
+            new Suite(2)
                 .Using(() => spy)
                 .Do(() => new TestObjectFixture { Id = 1 },
                     () => new TestObjectFixture { Id = 2 },
                     () => new TestObjectFixture { Id = 3 })
-                .Register(() => new TestObjectFixture {Id = 4})
+                .Do(() => new TestObjectFixture {Id = 4})
                 .Run();
 
             Assert.Equal(8, spy.Ids.Count);

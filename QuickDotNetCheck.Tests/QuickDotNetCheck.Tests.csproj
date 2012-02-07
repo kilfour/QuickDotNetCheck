@@ -65,6 +65,8 @@
     <Compile Include="SuiteTests\RunningFixtures\DoFixturesTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesTests.cs" />
     <Compile Include="SuiteTests\RunningFixtures\RunningFixturesWithDoTests.cs" />
+    <Compile Include="SuiteTests\RunningFixtures\SequenceFixturesTests.cs" />
+    <Compile Include="SuiteTests\ShrinkingFixtures\ShrinkingFixturesTest.cs" />
     <Compile Include="UntestedSpecsReportingTests.cs" />
   </ItemGroup>
   <ItemGroup>

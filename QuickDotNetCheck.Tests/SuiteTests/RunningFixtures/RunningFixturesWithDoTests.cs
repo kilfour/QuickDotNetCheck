@@ -18,10 +18,10 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void ZeroTestsWhatEverTransitions()
         {
             var suite =
-                new Suite(0, new[] {1, 100}.FromRange())
+                new Suite(0)
                     .Do<SomeFixtureToRun>()
                     .Do<SomeOtherFixtureToRun>()
-                    .Register<YetAnotherFixtureToRun>();
+                    .Do(new[] {1, 100}.FromRange(), opt => opt.Register<YetAnotherFixtureToRun>());
 
             suite.Run();
 
@@ -32,10 +32,10 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void OneTestZeroTransitions()
         {
             var suite =
-                new Suite(1, 0)
+                new Suite(1)
                     .Do<SomeFixtureToRun>()
                     .Do<SomeOtherFixtureToRun>()
-                    .Register<YetAnotherFixtureToRun>();
+                    .Do(0, opt => opt.Register<YetAnotherFixtureToRun>());
 
             suite.Run();
 
@@ -49,10 +49,10 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         {
             var numberOfTransitions = new[] {1, 100}.FromRange();
             var suite =
-                new Suite(1, numberOfTransitions)
+                new Suite(1)
                     .Do<SomeFixtureToRun>()
                     .Do<SomeOtherFixtureToRun>()
-                    .Register<YetAnotherFixtureToRun>();
+                    .Do(numberOfTransitions, opt => opt.Register<YetAnotherFixtureToRun>());
 
             suite.Run();
 

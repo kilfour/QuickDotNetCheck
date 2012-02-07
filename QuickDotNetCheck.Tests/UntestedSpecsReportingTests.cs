@@ -18,8 +18,8 @@ namespace QuickDotNetCheckTests
         {
             Xunit.Assert.Throws<ApplicationException>(
                 () =>
-                new Suite(1, 1)
-                    .Register(() => new UntestedSpecsReportingTests())
+                new Suite()
+                    .Do(() => new UntestedSpecsReportingTests())
                     .Run());
         }
 

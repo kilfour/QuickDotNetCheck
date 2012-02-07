@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using QuickDotNetCheck.Exceptions;
 using QuickDotNetCheck.Implementation;
 using QuickDotNetCheck.NotInTheRoot;
 
@@ -38,13 +39,6 @@ namespace QuickDotNetCheck
             }
         }
 
-        public void Run(int numberOfTimes)
-        {
-            new Suite(numberOfTimes, 1)
-                .Register(() => (IFixture)Activator.CreateInstance(GetType()))
-                .Run();
-        }
-
         public IEnumerable<string> SpecNames()
         {
             return testMethods.Values.Select(v => v.Name);
@@ -68,8 +62,16 @@ namespace QuickDotNetCheck
             var result = new Dictionary<string, int>();
             foreach (var spec in factsToCheck)
             {
-                result.Add(spec.Name, spec.Verify());
-                testMethods[spec].TimesExecuted++;
+                try
+                {
+                    result.Add(spec.Name, spec.Verify());
+                    testMethods[spec].TimesExecuted++;
+                }
+                catch (FalsifiableException ex)
+                {
+                    ex.Spec = spec;
+                    throw;
+                }
             }
 
             return result;

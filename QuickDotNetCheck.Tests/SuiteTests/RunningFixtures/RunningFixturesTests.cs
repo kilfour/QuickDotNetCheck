@@ -14,8 +14,8 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void OneTestOneTransitionOneFixture()
         {
             var suite =
-                new Suite(1, 1)
-                    .Register<SomeFixtureToRun>();
+                new Suite(1)
+                    .Do(1, opt => opt.Register<SomeFixtureToRun>());
 
             suite.Run();
 
@@ -26,8 +26,8 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void TenTestOneTransitionOneFixture()
         {
             var suite =
-                new Suite(10, 1)
-                    .Register<SomeFixtureToRun>();
+                new Suite(10)
+                    .Do(1, opt => opt.Register<SomeFixtureToRun>());
 
             suite.Run();
 
@@ -38,8 +38,8 @@ namespace QuickDotNetCheckTests.SuiteTests.RunningFixtures
         public void OneTestTenTransitionOneFixture()
         {
             var suite =
-                new Suite(1, 10)
-                    .Register<SomeFixtureToRun>();
+                new Suite(1)
+                    .Do(10, opt => opt.Register<SomeFixtureToRun>());
 
             suite.Run();
 

@@ -23,32 +23,23 @@ namespace QuickDotNetCheck.Examples
         [Fact]
         public void VerifyAll()
         {
-            var suite = new Suite(50, 20).Verbose();
-            suite
-                .Using(() => new BugHouseFixtureState())
-                .Register(() => new BugHouseFixture(suite))
+            new Suite(50)
+                .Using(() => new BugHouse())
+                .Do(20, opt => opt.Register<BugHouseFixture>())
                 .Run();
         }
     }
 
-    public class BugHouseFixtureState
+    public class BugHouseFixture : Fixture, IUse<BugHouse>
     {
-        public BugHouse BugHouse { get; private set; }
-        public BugHouseFixtureState()
-        {
-            BugHouse = new BugHouse();
-        }
-    }
-
-    public class BugHouseFixture : Fixture
-    {
-        private readonly Suite suite;
         private int input { get; set; }
         private bool output;
 
-        public BugHouseFixture(Suite suite)
+        private BugHouse bugHouse;
+
+        public void Set(BugHouse state)
         {
-            this.suite = suite;
+            bugHouse = state;
         }
 
         public override void Arrange()
@@ -58,7 +49,7 @@ namespace QuickDotNetCheck.Examples
 
         protected override void Act()
         {
-            output = suite.Get<BugHouseFixtureState>().BugHouse.Run(input);
+            output = bugHouse.Run(input);
         }
 
         private ShrinkingStrategy shrunk;
@@ -77,9 +68,9 @@ namespace QuickDotNetCheck.Examples
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine(GetType().Name);
+            sb.Append(GetType().Name);
             if(!shrunk.Shrunk())
-                sb.AppendFormat("input : {0}.", input);
+                sb.AppendFormat(", input : {0}.", input);
             return sb.ToString();
         }
 
