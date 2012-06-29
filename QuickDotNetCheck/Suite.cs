@@ -33,6 +33,16 @@ namespace QuickDotNetCheck
             }
             return this;
         }
+
+        public Sequence Register(params Type[] types)
+        {
+            foreach (var type in types)
+            {
+                var typeCopy = type;
+                FixtureFuncs.Add(() => (IFixture)Activator.CreateInstance(typeCopy));
+            }
+            return this;
+        }
     }
 
     public class Suite
@@ -40,11 +50,9 @@ namespace QuickDotNetCheck
         public static Exception LastException { get; set; }
 
         private readonly int numberOfTests;
-
-        //private readonly List<Func<IFixture>> doFixtures = new List<Func<IFixture>>();
-        //private readonly List<Func<IFixture>> fixtureFuncs = new List<Func<IFixture>>();
         private readonly List<Sequence> sequences = new List<Sequence>();
 
+        // todo: make this a local var
         private List<IFixture> executedFixtures = new List<IFixture>();
 
         private List<object> objects;
