@@ -44,7 +44,12 @@ namespace QuickDotNetCheck
             return testMethods.Values.Select(v => v.Name);
         }
 
-        public virtual void Arrange() { }
+    	public IEnumerable<Spec> GetFutureSpecs()
+    	{
+			return testMethods.Keys.Where(v => v.ForFixture != null);
+    	}
+
+    	public virtual void Arrange() { }
         public virtual bool CanAct() { return true; }
         public virtual void BeforeAct() { }
         public virtual void AfterAct() { }
@@ -52,6 +57,7 @@ namespace QuickDotNetCheck
 
         public void Execute()
         {
+        	FilterOutFutureSpecs();
             BeforeAct();
             FilterOutSpecsWithFailingPrecondition();
             Act();
@@ -81,9 +87,14 @@ namespace QuickDotNetCheck
 
         public virtual void Shrink(Func<bool> runFunc) { }
 
+		private void FilterOutFutureSpecs()
+		{
+			factsToCheck = testMethods.Keys.ToList();//.Where(spec => spec.ForFixture != null).ToList();
+		}
+
         private void FilterOutSpecsWithFailingPrecondition()
         {
-            factsToCheck = testMethods.Keys.Where(spec => spec.VerifyPrecondition()).ToList();
+			factsToCheck = factsToCheck.Where(spec => spec.VerifyPrecondition()).ToList();
         }
 
         private void FilterOutSpecsWithFailingPostcondition()

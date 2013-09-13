@@ -13,7 +13,7 @@ namespace QuickDotNetCheck
         
         private Func<bool> postcondition = () => true;
 
-		private Type ForFixture { get; set; }
+		public Type ForFixture { get; private set; }
 
         public Spec(Action invariant)
         {

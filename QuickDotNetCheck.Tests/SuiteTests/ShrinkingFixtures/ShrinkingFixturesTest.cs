@@ -27,18 +27,13 @@ namespace QuickDotNetCheckTests.SuiteTests.ShrinkingFixtures
         {
             var report = Assert.Throws<RunReport>(
                 () =>
-                new Suite(10)
+                new Suite()
                     .Using(() => new TestState())
                     .Do<ParentTestFixture>()
                     .Do<ChildTestFixture>()
-                    .Do<ParentTestFixture>()
+                    .Do<ParentTestFixture>() // should be shrunk out
                     .Do<ChildTestFixture>()
                     .Do<FailChildTestFixture>()
-                    .Do<FailChildTestFixture>()
-                    .Do(100,
-                        opt => opt.Register<ParentTestFixture>(),
-                        opt => opt.Register<ChildTestFixture>(),
-                        opt => opt.Register<FailChildTestFixture>())
                     .Run());
 
             var failcase = report.SimplestFailCase;

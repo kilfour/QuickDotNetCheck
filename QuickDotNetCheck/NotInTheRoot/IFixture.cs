@@ -13,5 +13,6 @@ namespace QuickDotNetCheck.NotInTheRoot
 
         void Shrink(Func<bool> runFunc);
         IEnumerable<string> SpecNames();
+		IEnumerable<Spec> GetFutureSpecs();
     }
 }

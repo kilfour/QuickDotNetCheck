@@ -1,5 +1,6 @@
 ﻿using System;
 using QuickDotNetCheck;
+using QuickDotNetCheck.Exceptions;
 using Xunit;
 
 namespace QuickDotNetCheckTests
@@ -16,7 +17,7 @@ namespace QuickDotNetCheckTests
         [Fact]
         public void Throws()
         {
-            Xunit.Assert.Throws<ApplicationException>(
+			Assert.Throws<UntestedSpecsException>(
                 () =>
                 new Suite()
                     .Do(() => new UntestedSpecsReportingTests())

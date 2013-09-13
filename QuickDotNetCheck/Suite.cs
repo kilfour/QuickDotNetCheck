@@ -167,7 +167,7 @@ namespace QuickDotNetCheck
                 var sb = new StringBuilder();
                 sb.AppendLine("Untested specs  : ");
                 untested.ForEach(s => sb.AppendLine(s.Key));
-                throw new ApplicationException(sb.ToString());
+                throw new UntestedSpecsException(sb.ToString());
             }
         }
 
@@ -184,6 +184,7 @@ namespace QuickDotNetCheck
                 {
                     LastException = e;
                 }
+            	//var futureSpecs = fixture.GetFutureSpecs();
                 var testedSpecs = fixture.AssertSpecs();
                 foreach (var testedSpec in testedSpecs)
                 {
@@ -278,15 +279,9 @@ namespace QuickDotNetCheck
                         
                         if (ix == actionsCopy.Count - 1)
                         {
-                            try
-                            {
-                                if (previousFailure.Spec != null)
-                                    previousFailure.Spec.Verify();
-                            }
-                            catch(Exception)
-                            {
-                                return false;
-                            }
+                           
+                            if (previousFailure.Spec != null)
+                                previousFailure.Spec.Verify();
                             
                             if(previousFailure.InnerException != null)
                             {
