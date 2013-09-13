@@ -59,11 +59,18 @@ namespace QuickDotNetCheck
         private readonly List<Func<object>> objectFuncs = new List<Func<object>>();
         private List<IDisposable> disposables;
         private readonly List<Func<IDisposable>> disposableFuncs = new List<Func<IDisposable>>();
+        private bool shrink = true;
 
         public Suite() : this(1){ }
         public Suite(int numberOfTests) 
         {
             this.numberOfTests = numberOfTests;
+        }
+
+        public Suite DontShrink()
+        {
+            shrink = false;
+            return this;
         }
 
         public Suite Do<TFixture>() where TFixture : IFixture
@@ -125,6 +132,15 @@ namespace QuickDotNetCheck
             return this;
         }
 
+        public Suite Using<TObject>()
+        {
+            if(typeof(TObject).GetInterface("IDisposable") != null)
+                disposableFuncs.Add(() => (IDisposable)Activator.CreateInstance<TObject>());
+            else
+                objectFuncs.Add(() => Activator.CreateInstance<TObject>());
+            return this;
+        }
+
         public void Run()
         {
             objects = objectFuncs.Select(f => f()).ToList();
@@ -161,6 +177,7 @@ namespace QuickDotNetCheck
             {
                 try
                 {
+                    LastException = null;
                     fixture.Execute();
                 }
                 catch (Exception e)
@@ -186,7 +203,9 @@ namespace QuickDotNetCheck
                 catch (FalsifiableException failure)
                 {
                     disposables.ForEach(d => d.Dispose());
-                    throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure));
+                    if(shrink)
+                        throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, Shrink(executedFixtures, failure));
+                    throw new RunReport(testNumber + 1, fixtureNumber + 1, failure, null);
                 }
             }
         }
@@ -212,7 +231,10 @@ namespace QuickDotNetCheck
             var found = objects.SingleOrDefault(o => o.GetType() == type);
             if (found != null)
                 return found;
-            return disposables.Single(o => o.GetType() == type);
+            found = disposables.SingleOrDefault(o => o.GetType() == type);
+            if (found != null)
+                return found;
+            throw new InvalidOperationException(string.Format("Fixture uses an object of type {0}, but none is registered.", type.Name));
         }
 
         private IFixture SetUsedState(IFixture fixture)
@@ -256,8 +278,16 @@ namespace QuickDotNetCheck
                         
                         if (ix == actionsCopy.Count - 1)
                         {
-                            if (previousFailure.Spec != null)
-                                previousFailure.Spec.Verify();
+                            try
+                            {
+                                if (previousFailure.Spec != null)
+                                    previousFailure.Spec.Verify();
+                            }
+                            catch(Exception)
+                            {
+                                return false;
+                            }
+                            
                             if(previousFailure.InnerException != null)
                             {
                                 if (LastException == null)
