@@ -47,6 +47,7 @@ namespace QuickDotNetCheck
         public virtual void Arrange() { }
         public virtual bool CanAct() { return true; }
         public virtual void BeforeAct() { }
+        public virtual void AfterAct() { }
         protected virtual void Act() { }
 
         public void Execute()
@@ -55,6 +56,7 @@ namespace QuickDotNetCheck
             FilterOutSpecsWithFailingPrecondition();
             Act();
             FilterOutSpecsWithFailingPostcondition();
+            AfterAct();
         }
 
         public IDictionary<string, int> Assert()
