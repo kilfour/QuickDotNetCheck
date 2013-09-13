@@ -59,7 +59,7 @@ namespace QuickDotNetCheck
             AfterAct();
         }
 
-        public IDictionary<string, int> Assert()
+        public IDictionary<string, int> AssertSpecs()
         {
             var result = new Dictionary<string, int>();
             foreach (var spec in factsToCheck)

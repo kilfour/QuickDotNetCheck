@@ -184,7 +184,7 @@ namespace QuickDotNetCheck
                 {
                     LastException = e;
                 }
-                var testedSpecs = fixture.Assert();
+                var testedSpecs = fixture.AssertSpecs();
                 foreach (var testedSpec in testedSpecs)
                 {
                     knownspecs[testedSpec.Key] += testedSpec.Value;

@@ -1,4 +1,5 @@
 using System;
+using QuickDotNetCheck.NotInTheRoot;
 
 namespace QuickDotNetCheck
 {
@@ -11,6 +12,8 @@ namespace QuickDotNetCheck
         private Func<bool> precondition = () => true;
         
         private Func<bool> postcondition = () => true;
+
+		private Type ForFixture { get; set; }
 
         public Spec(Action invariant)
         {
@@ -45,5 +48,12 @@ namespace QuickDotNetCheck
         {
             return postcondition();
         }
+
+    	public Spec For<TFixture>()
+			where TFixture : IFixture
+    	{
+    		ForFixture = typeof (TFixture);
+    		return this;
+    	}
     }
 }

@@ -26,7 +26,7 @@ namespace QuickDotNetCheckTests
         {
             postconditionHolds = () => false;
             Execute();
-            Assert();
+            AssertSpecs();
             Xunit.Assert.False(specWasVerified);
         }
 
@@ -35,7 +35,7 @@ namespace QuickDotNetCheckTests
         {
             postconditionHolds = () => true;
             Execute();
-            Assert();
+            AssertSpecs();
             Xunit.Assert.True(specWasVerified);
         }
     }

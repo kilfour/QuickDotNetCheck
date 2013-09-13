@@ -27,8 +27,8 @@ namespace QuickDotNetCheckTests
         {
             preconditionHolds = false;
             Execute();
-            Assert();
-            Xunit.Assert.False(specWasVerified);
+            AssertSpecs();
+            Assert.False(specWasVerified);
         }
 
         [Fact]
@@ -36,8 +36,8 @@ namespace QuickDotNetCheckTests
         {
             preconditionHolds = true;
             Execute();
-            Assert();
-            Xunit.Assert.True(specWasVerified);
+            AssertSpecs();
+            Assert.True(specWasVerified);
         }
     }
 }
