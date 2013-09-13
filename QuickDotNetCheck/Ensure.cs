@@ -93,9 +93,13 @@ namespace QuickDotNetCheck
         public static void Equal(object expected, object actual)
         {
             Ensuring.Count++;
+            if(expected == null && actual != null)
+                throw new FalsifiableException(null, actual.ToString());
+            if (expected == null)
+                return;
             if (expected.Equals(actual))
                 return;
-            throw new FalsifiableException(expected.ToString(), actual.ToString());
+            throw new FalsifiableException(expected.ToString(), actual == null ? null : actual.ToString());
         }
 
         public static void Equal(object expected, object actual, string message)
