@@ -8,44 +8,7 @@ using QuickGenerate;
 
 namespace QuickDotNetCheck
 {
-    public class Sequence
-    {
-        public int NumberToRun { get; set; }
-        public List<Func<IFixture>> FixtureFuncs { get; set; }
-
-        public Sequence()
-        {
-            FixtureFuncs = new List<Func<IFixture>>();
-        }
-
-        public Sequence Register<TFixture>()
-            where TFixture : IFixture
-        {
-            FixtureFuncs.Add(() => (TFixture)Activator.CreateInstance(typeof(TFixture)));
-            return this;
-        }
-
-        public Sequence Register(params Func<IFixture>[] funcs)
-        {
-            foreach (var fixtureFunc in funcs)
-            {
-                FixtureFuncs.Add(fixtureFunc);
-            }
-            return this;
-        }
-
-        public Sequence Register(params Type[] types)
-        {
-            foreach (var type in types)
-            {
-                var typeCopy = type;
-                FixtureFuncs.Add(() => (IFixture)Activator.CreateInstance(typeCopy));
-            }
-            return this;
-        }
-    }
-
-    public class Suite
+	public class Suite
     {
         public static Exception LastException { get; set; }
 
@@ -151,13 +114,14 @@ namespace QuickDotNetCheck
                     .Distinct()
                     .ToDictionary(s => s, s => 0);
 
+        	var futureSpecs = new List<Spec>();
             disposables.ForEach(d => d.Dispose());
             for (var testNumber = 0; testNumber < numberOfTests; testNumber++)
             {
                 executedFixtures = new List<IFixture>();
                 objects = objectFuncs.Select(f => f()).ToList();
                 disposables = disposableFuncs.Select(f => f()).ToList();
-                RunSequences(knownspecs, testNumber);
+				RunSequences(knownspecs, testNumber, futureSpecs);
                 disposables.ForEach(d => d.Dispose());
             }
             
@@ -171,7 +135,7 @@ namespace QuickDotNetCheck
             }
         }
 
-        private void ExecuteFixture(int fixtureNumber, int testNumber, Dictionary<string, int> knownspecs, IFixture fixture)
+        private void ExecuteFixture(int fixtureNumber, int testNumber, Dictionary<string, int> knownspecs, IFixture fixture, List<Spec> futureSpecs)
         {
             try
             {
@@ -184,14 +148,30 @@ namespace QuickDotNetCheck
                 {
                     LastException = e;
                 }
-            	//var futureSpecs = fixture.GetFutureSpecs();
+            	
                 var testedSpecs = fixture.AssertSpecs();
                 foreach (var testedSpec in testedSpecs)
                 {
                     knownspecs[testedSpec.Key] += testedSpec.Value;
                 }
+
+				futureSpecs.AddRange(fixture.GetFutureSpecs());
+				foreach (var spec in futureSpecs.Where(s => s.ForFixture == fixture.GetType()))
+				{
+					try
+					{
+						knownspecs[spec.Name] += spec.Verify();
+					}
+					catch (FalsifiableException ex)
+					{
+						ex.Spec = spec;
+						throw;
+					}
+				}
                 if (LastException != null)
                     throw new UnexpectedException(LastException);
+
+
             }
             catch (FalsifiableException)
             {
@@ -211,7 +191,7 @@ namespace QuickDotNetCheck
             }
         }
 
-        private void RunSequences(Dictionary<string, int> knownspecs, int testNumber)
+        private void RunSequences(Dictionary<string, int> knownspecs, int testNumber, List<Spec> futureSpecs)
         {
             var fixtureNumber = 0;
             foreach (var sequence in sequences)
@@ -221,7 +201,7 @@ namespace QuickDotNetCheck
                     var fixture = sequence.FixtureFuncs.Select(f => SetUsedState(f())).Where(f => f.CanAct()).PickOne();
                     executedFixtures.Add(fixture);
                     fixture.Arrange();
-                    ExecuteFixture(fixtureNumber, testNumber, knownspecs, fixture);
+					ExecuteFixture(fixtureNumber, testNumber, knownspecs, fixture, futureSpecs);
                     fixtureNumber++;
                 }
             }

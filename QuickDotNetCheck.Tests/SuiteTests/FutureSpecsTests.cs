@@ -6,8 +6,8 @@ namespace QuickDotNetCheckTests.SuiteTests
 {
 	public class FutureSpecsTests : Fixture
 	{
-		[Fact(Skip="work in progress")]
-		public void DoesNotThrow()
+		[Fact]
+		public void ThrowsUntestedSpec()
 		{
 			Assert.Throws<UntestedSpecsException>(
 				() => new Suite()
@@ -15,8 +15,8 @@ namespace QuickDotNetCheckTests.SuiteTests
 				.Run());
 		}
 
-		[Fact(Skip = "work in progress")]
-		public void Throws()
+		[Fact]
+		public void RunFails()
 		{
 			Assert.Throws<RunReport>(
 				() =>

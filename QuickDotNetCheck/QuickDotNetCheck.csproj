@@ -50,6 +50,7 @@
     <Compile Include="Exceptions\UnexpectedException.cs" />
     <Compile Include="Exceptions\UntestedSpecsException.cs" />
     <Compile Include="RunReport.cs" />
+    <Compile Include="Sequence.cs" />
     <Compile Include="ShrinkingStrategies\Get.cs" />
     <Compile Include="ShrinkingStrategies\Manipulations\ManipulationLeaf.cs" />
     <Compile Include="ShrinkingStrategies\Manipulations\IManipulation.cs" />

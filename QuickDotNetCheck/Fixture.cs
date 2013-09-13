@@ -89,7 +89,7 @@ namespace QuickDotNetCheck
 
 		private void FilterOutFutureSpecs()
 		{
-			factsToCheck = testMethods.Keys.ToList();//.Where(spec => spec.ForFixture != null).ToList();
+			factsToCheck = testMethods.Keys.Where(spec => spec.ForFixture == null).ToList();
 		}
 
         private void FilterOutSpecsWithFailingPrecondition()
